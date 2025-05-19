@@ -1,6 +1,6 @@
 {
   "name": "ScarletRCON",
-  "version_number": "0.1.14",
+  "version_number": "0.1.15",
   "website_url": "https://github.com/markvaaz/ScarletRCON",
   "description": "V Rising RCON Command Framework",
   "dependencies": [
