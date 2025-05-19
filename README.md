@@ -1,6 +1,14 @@
 # ScarletRCON
 
-ScarletRCON is a flexible RCON command framework mod for *V Rising* that enables easy creation and management of server commands. It works as a standalone RCON command handler which other mods can integrate with to register custom commands dynamically.
+**ScarletRCON** is a flexible and powerful RCON command framework mod for V Rising that enhances server management by providing a rich set of built-in commands beyond the default RCON capabilities. It serves as a standalone RCON command handler that also offers an easy-to-use API for modders to dynamically create and register custom commands, enabling seamless integration across multiple mods
+
+---
+
+## Support & Donations
+
+<a href='https://ko-fi.com/F2F21EWEM7' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi6.png?v=6' alt='Buy Me a Coffee at ko-fi.com' /></a>
+
+---
 
 ## Features
 
@@ -10,93 +18,17 @@ ScarletRCON is a flexible RCON command framework mod for *V Rising* that enables
 * Ships with a solid set of built-in default commands covering common server administration tasks.
 * Allows other mods to register commands under their own namespace automatically based on assembly name.
 
-## Usage
-
-You can use ScarletRCON to register your own RCON commands in your mod by defining static methods annotated with `[RconCommand("commandName")]` and implementing the logic you need. The framework handles parsing arguments, invoking your methods, and returning command output.
-
-Commands can have multiple overloads and support optional trailing parameters of type `List<string>` for variable-length argument lists.
-
-### Command Namespacing
-
-When you register a command from another mod, it is automatically prefixed using the mod's assembly name in lowercase.
-
-For example, if your mod is called `TestMod` and you define:
-
-```csharp
-[RconCommand("hello")]
-public static void HelloCommand(string name) {
-    // logic here
-}
-```
-
-The final command name becomes:
-
-`testmod.hello`
-
-This avoids name conflicts and helps keep commands organized per mod.
-
-If the command is defined within ScarletRCON itself, no prefix is added (e.g., just `help`, `give`, etc.).
-
-### Registering Commands
-
-Inside your mod, you only need to call this during initialization:
-
-```csharp
-CommandHandler.RegisterAll();
-```
-
-This will register all `[RconCommand]` methods from your assembly automatically.
 
 ## For more information, please visit the [ScarletRCON Wiki on Thunderstore](https://thunderstore.io/c/v-rising/p/ScarletMods/ScarletRCON/wiki/).
 
-# Default Commands
+## Wiki Index
 
-The following commands come built-in with ScarletRCON and are ready to use:
+- [Built-in Commands](https://thunderstore.io/c/v-rising/p/ScarletMods/ScarletRCON/wiki/3498-built-in-commands/)
+- [Custom Commands](https://thunderstore.io/c/v-rising/p/ScarletMods/ScarletRCON/wiki/3496-custom-commands/)
+- [Installation](https://thunderstore.io/c/v-rising/p/ScarletMods/ScarletRCON/wiki/3500-installation/)
+- [Integration](https://thunderstore.io/c/v-rising/p/ScarletMods/ScarletRCON/wiki/3497-integration/)
+- [Using RCON](https://thunderstore.io/c/v-rising/p/ScarletMods/ScarletRCON/wiki/3499-using-rcon/)
 
-* `announce <message>`
-  Sends a message to all players connected to the server.
-
-* `announcerestart <minutes>`
-  Sends a pre-configured message that announces a server restart in the specified number of minutes.
-
-* `help <commandName>`
-  Displays detailed information about a specific command.
-
-* `help`
-  Lists all available commands when called without parameters.
-
-* `playerinfo <playerName>`
-  Displays information about the specified player.
-
-* `listadmins`
-  Lists all connected admins.
-
-* `listplayers`
-  Lists all connected players.
-
-* `whereis <playerName>`
-  Shows the location coordinates of the specified player.
-
-* `teleport <playerName> <x> <y> <z>`
-  Teleports the specified player to the given coordinates.
-
-* `teleport <playerName> <targetPlayerName>`
-  Teleports the specified player to another player.
-
-* `teleportall <x> <y> <z>`
-  Teleports all connected players to the given coordinates.
-
-* `teleportall <playerName>`
-  Teleports all connected players to the specified player.
-
-* `give <playerName> <prefabGUID> <amount>`
-  Gives the specified amount of an item (identified by prefabGUID) to the player.
-
-* `giveall <prefabGUID> <amount>`
-  Gives the specified amount of an item to all players.
-
-* `kick <playerName>`
-  Kicks the specified player from the server.
 
 ## Installation
 
