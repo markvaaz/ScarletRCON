@@ -1,0 +1,9 @@
+{
+  "name": "ScarletRCON",
+  "version_number": "0.1.14",
+  "website_url": "https://github.com/markvaaz/ScarletRCON",
+  "description": "V Rising RCON Command Framework",
+  "dependencies": [
+    "BepInEx-BepInExPack_V_Rising-1.733.2"
+  ]
+}

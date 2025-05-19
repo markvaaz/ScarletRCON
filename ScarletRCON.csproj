@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <AssemblyName>ScarletRCON</AssemblyName>
+    <Description>V Rising RCON Command Framework</Description>
+    <Version>0.1.14</Version>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>ScarletRCON</RootNamespace>
+    <PackageId>ScarletRCON</PackageId>
+    <AssemblyVersion>0.1.14.0</AssemblyVersion>
+    <FileVersion>0.1.14.0</FileVersion>
+    <Authors>markvaaz</Authors>
+  </PropertyGroup>
+  <PropertyGroup>
+    <BepInExPluginGuid>markvaaz.ScarletRCON</BepInExPluginGuid>
+    <BepInExPluginName>ScarletRCON</BepInExPluginName>
+    <BepInExPluginVersion>0.1.14</BepInExPluginVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="BepInEx.Unity.IL2CPP" Version="6.0.0-be.691" IncludeAssets="compile" />
+    <PackageReference Include="BepInEx.Core" Version="6.0.0-be.691" IncludeAssets="compile" />
+    <PackageReference Include="BepInEx.PluginInfoProps" Version="2.*" />
+    <PackageReference Include="VRising.Unhollowed.Client" Version="1.1.*" />
+  </ItemGroup>
+</Project>
