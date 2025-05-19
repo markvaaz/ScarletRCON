@@ -36,7 +36,7 @@
 
 This mod requires the following dependencies:
 
-* **[BepInEx (RC2)](https://wiki.vrisingmods.com/user/bepinex_install.html)**
+* **[BepInEx](https://wiki.vrisingmods.com/user/bepinex_install.html)**
 
 Make sure BepInEx is installed and loaded **before** installing ScarletRCON.
 
