@@ -6,7 +6,6 @@ using System.Reflection;
 namespace ScarletRCON.CommandSystem;
 
 public static class CommandHandler {
-  // Mude Commands para Dictionary<string, List<RconCommandDefinition>>
   internal static readonly Dictionary<string, List<RconCommandDefinition>> Commands = new();
 
   internal static void Initialize() {
