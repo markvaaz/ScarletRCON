@@ -31,9 +31,7 @@ If you need a client to interact with ScarletRCON, check out the [V Rising RCON 
 
 ### Upcoming features
 
-* Command groups for custom and built-in commands.
-
-## Feedback & Suggestions
+Command groups for custom and built-in commands.
 
 Have ideas or feedback? [Leave your suggestion on GitHub](https://github.com/markvaaz/ScarletRCON).
 
