@@ -6,7 +6,7 @@ using System.Reflection;
 namespace ScarletRCON.CommandSystem;
 
 public static class CommandHandler {
-  internal static readonly Dictionary<string, List<RconCommandDefinition>> Commands = new();
+  internal static Dictionary<string, List<RconCommandDefinition>> Commands { get; private set; } = [];
 
   internal static void Initialize() {
     RegisterAll(Assembly.GetExecutingAssembly());
@@ -58,6 +58,13 @@ public static class CommandHandler {
         }
       }
     }
+
+    // Sort commands
+    Commands = Commands.Values
+      .SelectMany(c => c)
+      .OrderBy(c => c.Name)
+      .GroupBy(c => c.Name)
+      .ToDictionary(g => g.Key, g => g.ToList());
   }
 
   public static void UnregisterAssembly() {
@@ -110,7 +117,7 @@ public static class CommandHandler {
     }
 
     try {
-      return CoroutineHandler.ExecuteAsync(() => {
+      return CommandExecutor.Enqueue(() => {
         object result = def.Method.Invoke(def.TargetInstance, parsedArgs);
         return result?.ToString() ?? "Command executed.";
       });
@@ -140,7 +147,7 @@ public static class CommandHandler {
     }).ToList();
 
     if (candidates.Count == 0) {
-      error = $"Invalid arguments for command '{name}'. try:\n\u001b[90m{string.Join("\n", defs.Select(d => $"{d.Name} {d.Usage}"))}\u001b[0m";
+      error = $"Invalid arguments for command '{name}'. try:\n{string.Join("\n", defs.Select(d => $"\u001b[90m{d.Name} {d.Usage}\u001b[0m"))}";
       return false;
     }
 

@@ -2,6 +2,13 @@
 
 **ScarletRCON** is a flexible and powerful RCON command framework mod for V Rising that enhances server management by providing a rich set of built-in commands beyond the default RCON capabilities. It serves as a standalone RCON command handler that also offers an easy-to-use API for modders to dynamically create and register custom commands, enabling seamless integration across multiple mods
 
+## What is RCON?
+
+**RCON** (Remote Console) is a protocol used by server administrators to remotely execute commands and manage game servers in real time. For V Rising, RCON allows you to control your server, perform administrative actions, and automate tasks without needing direct access to the server’s hardware.
+
+ScarletRCON builds on the standard RCON functionality by offering a more advanced command framework. It simplifies server management, supports custom commands from other mods, and enables powerful automation and integration—all through a unified RCON interface.
+
+
 ---
 
 ## Support & Donations
@@ -18,6 +25,17 @@
 * Ships with a solid set of built-in default commands covering common server administration tasks.
 * Allows other mods to register commands under their own namespace automatically based on assembly name.
 
+## V Rising RCON Client
+
+If you need a client to interact with ScarletRCON, check out the [V Rising RCON Client on GitHub](https://github.com/markvaaz/V-Rising-RCON). This open-source tool provides a convenient way to send RCON commands to your V Rising server.
+
+### Upcoming features
+
+* Command groups for custom and built-in commands.
+
+## Feedback & Suggestions
+
+Have ideas or feedback? [Leave your suggestion on GitHub](https://github.com/markvaaz/ScarletRCON).
 
 ## For more information, please visit the [ScarletRCON Wiki on Thunderstore](https://thunderstore.io/c/v-rising/p/ScarletMods/ScarletRCON/wiki/).
 

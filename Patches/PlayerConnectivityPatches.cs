@@ -1,5 +1,6 @@
 using HarmonyLib;
 using ProjectM;
+using ProjectM.Gameplay.WarEvents;
 using ProjectM.Network;
 using ScarletRCON.Services;
 using Stunlock.Core;

@@ -1,8 +1,8 @@
 {
   "name": "ScarletRCON",
-  "version_number": "0.1.15",
+  "version_number": "1.0.5",
   "website_url": "https://github.com/markvaaz/ScarletRCON",
-  "description": "V Rising RCON Command Framework",
+  "description": "Enhance server administration with powerful, ready-to-use RCON commands that go far beyond the default capabilities. Are you a Modder? Easily build and register your own custom RCON commands using the same flexible system.",
   "dependencies": [
     "BepInEx-BepInExPack_V_Rising-1.733.2"
   ]

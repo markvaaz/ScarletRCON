@@ -3,8 +3,14 @@ using HarmonyLib;
 using Il2CppInterop.Runtime;
 using Il2CppSystem.Collections.Generic;
 using ProjectM;
+using ProjectM.Gameplay.WarEvents;
+using ProjectM.Shared.WarEvents;
+using ProjectM.Shared.WorldEvents;
+using ProjectM.UI;
 using RCONServerLib;
 using ScarletRCON.CommandSystem;
+using Unity.Collections;
+using Unity.Entities;
 
 namespace ScarletRCON.Patches;
 
@@ -47,6 +53,14 @@ class RconInitializePatch {
       Console.WriteLine($"RCON command error: {ex}");
       return ex.Message.ToIntPtr();
     }
+  }
+}
+
+[HarmonyPatch(typeof(RconListenerSystem), nameof(RconListenerSystem.OnUpdate))]
+class RconUpdatePatch {
+  static void Postfix() {
+    if (CommandExecutor.Count == 0) return;
+    CommandExecutor.ProcessQueue();
   }
 }
 

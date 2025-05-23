@@ -8,12 +8,6 @@ using System;
 namespace ScarletRCON.Services;
 
 public class InventoryService {
-  public struct InventoryQueueItem {
-    public Entity entity;
-    public PrefabGUID guid;
-    public int amount;
-  }
-
   private static ServerGameManager GameManager = Core.GameManager;
   private static EntityManager EntityManager = Core.EntityManager;
 

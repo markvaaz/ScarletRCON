@@ -8,13 +8,18 @@ using ProjectM;
 namespace ScarletRCON;
 
 internal static class Core {
-  public static World Server { get; } = GetServerWorld() ?? throw new Exception("There is no Server world (yet)...");
+  public static World Server => GetServerWorld() ?? throw new Exception("There is no Server world (yet)...");
   public static PrefabCollectionSystem PrefabCollectionSystem => Server.GetExistingSystemManaged<PrefabCollectionSystem>();
   public static EntityManager EntityManager => Server.EntityManager;
   public static ServerGameManager GameManager => Server.GetExistingSystemManaged<ServerScriptMapper>().GetServerGameManager();
-  public static SystemHandle BootstrapSystem = Server.GetExistingSystem<ServerBootstrapSystem>();
+  public static ServerBootstrapSystem ServerBootstrapSystem => Server.GetExistingSystemManaged<ServerBootstrapSystem>();
+  public static AdminAuthSystem AdminAuthSystem => Server.GetExistingSystemManaged<AdminAuthSystem>();
+  public static KickBanSystem_Server KickBanSystem => Server.GetExistingSystemManaged<KickBanSystem_Server>();
+  public static UnitSpawnerUpdateSystem UnitSpawnerUpdateSystem => Server.GetExistingSystemManaged<UnitSpawnerUpdateSystem>();
+  public static EntityCommandBufferSystem EntityCommandBufferSystem => Server.GetExistingSystemManaged<EntityCommandBufferSystem>();
+  public static DebugEventsSystem DebugEventsSystem => Server.GetExistingSystemManaged<DebugEventsSystem>();
   public static bool hasInitialized = false;
-  public static ManualLogSource Log { get; } = Plugin.LogInstance;
+  public static ManualLogSource Log => Plugin.LogInstance;
 
   public static void Initialize() {
     if (hasInitialized) return;

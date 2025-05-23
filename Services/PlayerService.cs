@@ -5,6 +5,9 @@ using Unity.Collections;
 using Unity.Entities;
 using System.Linq;
 using System;
+using ScarletRCON.Systems;
+using Stunlock.Core;
+using Unity.Mathematics;
 
 namespace ScarletRCON.Services;
 
@@ -80,6 +83,10 @@ public static class PlayerService {
 
   public static List<PlayerData> GetAdmins() {
     return [.. AllPlayers.Where(p => p.IsAdmin)];
+  }
+
+  public static List<PlayerData> GetAllConnected() {
+    return [.. AllPlayers.Where(p => p.IsOnline)];
   }
 
   public static bool TryGetById(ulong platformId, out PlayerData playerData) {
