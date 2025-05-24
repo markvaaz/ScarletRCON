@@ -1,5 +1,6 @@
 /bin
 /obj
-/ScarletRCON.sln
+*.sln
 .vs
 .vscode
+*.nupkg
