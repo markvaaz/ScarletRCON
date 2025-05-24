@@ -66,33 +66,9 @@ class RconInitializePatch {
 
   public static void Send(string message) {
     var socket = GetSocket();
-
     if (socket == null) return;
 
-    const int maxPayloadBytes = 3584;
-
-    var lines = message.Split(['\n'], StringSplitOptions.None);
-
-    var currentChunk = new System.Text.StringBuilder();
-    foreach (var line in lines) {
-      var testChunk = currentChunk.Length == 0 ? line : currentChunk + "\n" + line;
-      var testBytesLength = System.Text.Encoding.UTF8.GetByteCount(testChunk);
-
-      if (testBytesLength > maxPayloadBytes) {
-        SendRconPacket(socket, currentChunk.ToString());
-
-        currentChunk.Clear();
-        currentChunk.Append(line);
-      } else {
-        if (currentChunk.Length > 0)
-          currentChunk.Append('\n');
-        currentChunk.Append(line);
-      }
-    }
-
-    if (currentChunk.Length > 0) {
-      SendRconPacket(socket, currentChunk.ToString());
-    }
+    SendRconPacket(socket, message);
   }
 
   static void SendRconPacket(Socket socket, string payload) {

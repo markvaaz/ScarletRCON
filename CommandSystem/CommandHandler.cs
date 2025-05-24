@@ -8,7 +8,7 @@ namespace ScarletRCON.CommandSystem;
 public static class CommandHandler {
   internal static Dictionary<string, List<RconCommandDefinition>> Commands { get; private set; } = [];
   public static Dictionary<string, List<RconCommandDefinition>> CommandGroups { get; private set; } = [];
-
+  public static Dictionary<string, List<RconCommandDefinition>> CustomCommandGroups { get; private set; } = [];
 
   internal static void Initialize() {
     RegisterAll(Assembly.GetExecutingAssembly());
@@ -81,13 +81,21 @@ public static class CommandHandler {
 
       Commands[fullCommandName].Add(def);
 
-      if (!CommandGroups.ContainsKey(group))
-        CommandGroups[group] = new List<RconCommandDefinition>();
+      if (!CustomCommandGroups.ContainsKey(group))
+        CustomCommandGroups[group] = new List<RconCommandDefinition>();
 
-      CommandGroups[group].Add(def);
+      CustomCommandGroups[group].Add(def);
     }
 
     SortCommands();
+  }
+
+  public static void SortCommands() {
+    Commands = Commands.Values
+        .SelectMany(c => c)
+        .OrderBy(c => c.Name)
+        .GroupBy(c => c.Name)
+        .ToDictionary(g => g.Key, g => g.ToList());
   }
 
   private static string GetTypeName(Type type) {
@@ -97,14 +105,6 @@ public static class CommandHandler {
     if (type == typeof(bool)) return "bool";
     if (type == typeof(List<string>)) return "text[]";
     return type.Name.ToLower();
-  }
-
-  public static void SortCommands() {
-    Commands = Commands.Values
-        .SelectMany(c => c)
-        .OrderBy(c => c.Name)
-        .GroupBy(c => c.Name)
-        .ToDictionary(g => g.Key, g => g.ToList());
   }
 
   public static void UnregisterAssembly() {

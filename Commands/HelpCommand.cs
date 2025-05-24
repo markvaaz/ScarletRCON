@@ -38,7 +38,14 @@ public static class HelpCommand {
       }
     }
 
-    result += "\n Total commands: " + CommandHandler.Commands.Count;
+    foreach (var commands in CommandHandler.CustomCommandGroups) {
+      result += $"\n\x1b[97m{commands.Key}\u001b[0m:\n";
+      foreach (var command in commands.Value) {
+        result += $"\u001b[37m- {command.Name}\u001b[0m:\u001b[90m{(string.IsNullOrEmpty(command.Usage) ? "" : " " + command.Usage)} - {command.Description}\u001b[0m\n";
+      }
+    }
+
+    result += "\nTotal commands: " + CommandHandler.Commands.Count;
 
     return result;
   }

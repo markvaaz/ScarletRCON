@@ -8,6 +8,11 @@
 
 ScarletRCON builds on the standard RCON functionality by offering a more advanced command framework. It simplifies server management, supports custom commands from other mods, and enables powerful automation and integration—all through a unified RCON interface.
 
+## V Rising RCON Client
+
+If you need a client to interact with ScarletRCON, check out the [V Rising RCON Client on GitHub](https://github.com/markvaaz/V-Rising-RCON). This open-source tool provides a convenient way to send RCON commands to your V Rising server.
+
+Have ideas or feedback? [Leave your suggestion on GitHub](https://github.com/markvaaz/ScarletRCON).
 
 ---
 
@@ -17,6 +22,11 @@ ScarletRCON builds on the standard RCON functionality by offering a more advance
 
 ---
 
+## New Features
+
+- Added support for defining RCON commands without requiring ScarletRCON as a direct dependency.
+- Added command categories for better organization.
+
 ## Features
 
 * Provides a simple API to register RCON commands.
@@ -24,16 +34,6 @@ ScarletRCON builds on the standard RCON functionality by offering a more advance
 * Handles command invocation safely with detailed error messages.
 * Ships with a solid set of built-in default commands covering common server administration tasks.
 * Allows other mods to register commands under their own namespace automatically based on assembly name.
-
-## V Rising RCON Client
-
-If you need a client to interact with ScarletRCON, check out the [V Rising RCON Client on GitHub](https://github.com/markvaaz/V-Rising-RCON). This open-source tool provides a convenient way to send RCON commands to your V Rising server.
-
-### Upcoming features
-
-Command groups for custom and built-in commands.
-
-Have ideas or feedback? [Leave your suggestion on GitHub](https://github.com/markvaaz/ScarletRCON).
 
 ## For more information, please visit the [ScarletRCON Wiki on Thunderstore](https://thunderstore.io/c/v-rising/p/ScarletMods/ScarletRCON/wiki/).
 
