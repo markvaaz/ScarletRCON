@@ -3,21 +3,20 @@ using HarmonyLib;
 using Il2CppInterop.Runtime;
 using Il2CppSystem.Collections.Generic;
 using ProjectM;
-using ProjectM.Gameplay.WarEvents;
-using ProjectM.Shared.WarEvents;
-using ProjectM.Shared.WorldEvents;
-using ProjectM.UI;
 using RCONServerLib;
 using ScarletRCON.CommandSystem;
-using Unity.Collections;
-using Unity.Entities;
+using Il2CppSystem.Net.Sockets;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 
 namespace ScarletRCON.Patches;
 
 [HarmonyPatch(typeof(RconListenerSystem), nameof(RconListenerSystem.OnCreate))]
 class RconInitializePatch {
+
+  static RemoteConServer server;
+
   static void Postfix(RconListenerSystem __instance) {
-    var server = __instance._Server;
+    server = __instance._Server;
     RemoteConServer.CommandEventHandler handler = DelegateSupport.ConvertDelegate<RemoteConServer.CommandEventHandler>(OnCommandReceived);
 
     server.UseCustomCommandHandler = true;
@@ -25,17 +24,27 @@ class RconInitializePatch {
     CommandHandler.Initialize();
 
     server.add_OnCommandReceived(handler);
+
+    server.TimeoutSeconds = 900;
+    server.MaxPasswordTries = 3;
+    server.BanMinutes = 30;
+    server.MaxConnections = 1;
   }
 
-  static IntPtr OnCommandReceived(string cmd, IList<string> args) {
+  public static Socket GetSocket() {
+
+    foreach (var tcpClient in server._clients) {
+      if (!tcpClient.Connected) continue;
+      return tcpClient.GetStream()._streamSocket;
+    }
+
+    return null;
+  }
+
+  static void OnCommandReceived(string cmd, IList<string> args) {
     try {
-      // Il2CppSystem.Collections.Generic.IList does not expose Count or enumerator,
-      // so I iterate by index until an exception is thrown (out of range).
-      // I don't know if this is the best way to do it, but it works.
       var argsResult = new System.Collections.Generic.List<string>();
-
       int i = 0;
-
       while (true) {
         try {
           var item = args[i];
@@ -47,12 +56,66 @@ class RconInitializePatch {
         }
       }
 
-      var response = CommandHandler.HandleCommand(cmd.ToLower(), argsResult);
-      return response.ToIntPtr();
+      var fullResponse = CommandHandler.HandleCommand(cmd.ToLower(), argsResult);
+
+      Send(fullResponse);
     } catch (Exception ex) {
       Console.WriteLine($"RCON command error: {ex}");
-      return ex.Message.ToIntPtr();
     }
+  }
+
+  public static void Send(string message) {
+    var socket = GetSocket();
+
+    if (socket == null) return;
+
+    const int maxPayloadBytes = 3584;
+
+    var lines = message.Split(['\n'], StringSplitOptions.None);
+
+    var currentChunk = new System.Text.StringBuilder();
+    foreach (var line in lines) {
+      var testChunk = currentChunk.Length == 0 ? line : currentChunk + "\n" + line;
+      var testBytesLength = System.Text.Encoding.UTF8.GetByteCount(testChunk);
+
+      if (testBytesLength > maxPayloadBytes) {
+        SendRconPacket(socket, currentChunk.ToString());
+
+        currentChunk.Clear();
+        currentChunk.Append(line);
+      } else {
+        if (currentChunk.Length > 0)
+          currentChunk.Append('\n');
+        currentChunk.Append(line);
+      }
+    }
+
+    if (currentChunk.Length > 0) {
+      SendRconPacket(socket, currentChunk.ToString());
+    }
+  }
+
+  static void SendRconPacket(Socket socket, string payload) {
+    var payloadBytes = System.Text.Encoding.UTF8.GetBytes(payload);
+
+    int size = 4 + 4 + payloadBytes.Length + 2;
+
+    var packet = new byte[4 + size];
+
+    BitConverter.GetBytes(size).CopyTo(packet, 0);
+    BitConverter.GetBytes(0).CopyTo(packet, 4);
+    BitConverter.GetBytes(0).CopyTo(packet, 8);
+
+    Array.Copy(payloadBytes, 0, packet, 12, payloadBytes.Length);
+
+    packet[12 + payloadBytes.Length] = 0;
+    packet[13 + payloadBytes.Length] = 0;
+
+    var il2cppArray = new Il2CppStructArray<byte>(packet.Length);
+    for (int i = 0; i < packet.Length; i++)
+      il2cppArray[i] = packet[i];
+
+    socket.Send(il2cppArray, 0, packet.Length, SocketFlags.None);
   }
 }
 
@@ -70,3 +133,7 @@ static class StringExtensions {
   }
 }
 
+static class Test {
+  public static void Testa() {
+  }
+}

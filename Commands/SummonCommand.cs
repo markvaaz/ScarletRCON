@@ -6,6 +6,7 @@ using Unity.Mathematics;
 
 namespace ScarletRCON.Commands;
 
+[RconCommandCategory("Summon")]
 public static class SummonCommand {
   [RconCommand("summon", "Summon an entity at specific coordinates.")]
   public static string Summon(string prefabGUID, float x, float y, float z, int quantity, int lifeTime) {

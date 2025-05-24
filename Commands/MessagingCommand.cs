@@ -3,10 +3,10 @@ using ScarletRCON.Systems;
 using ScarletRCON.CommandSystem;
 using ScarletRCON.Services;
 using ProjectM.Network;
-using ProjectM;
 
 namespace ScarletRCON.Commands;
 
+[RconCommandCategory("Messaging")]
 public static class MessagingCommands {
   [RconCommand("announce", "Send a message to all connected players.", "<message>")]
   public static string Announce(List<string> args) {

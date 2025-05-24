@@ -10,6 +10,7 @@ using Unity.Mathematics;
 
 namespace ScarletRCON.Commands;
 
+[RconCommandCategory("Player Administration")]
 public static class PlayerCommand {
   private static PrefabGUID FreezeBuffGUID = new(-1527408583);
   private static PrefabGUID WoundedBuffGUID = new(-1992158531);

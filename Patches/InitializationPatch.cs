@@ -1,8 +1,5 @@
-using System;
 using HarmonyLib;
 using ProjectM;
-using ProjectM.Gameplay.WarEvents;
-
 
 namespace ScarletRCON.Patches;
 

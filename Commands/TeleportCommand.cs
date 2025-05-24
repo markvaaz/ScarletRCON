@@ -5,6 +5,7 @@ using Unity.Mathematics;
 
 namespace ScarletRCON.Commands;
 
+[RconCommandCategory("Teleport & Location")]
 public static class TeleportCommand {
   [RconCommand("whereis", "Get position of a connected player.")]
   public static string WhereIs(string playerName) {

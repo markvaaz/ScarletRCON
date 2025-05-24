@@ -4,6 +4,7 @@ using Stunlock.Core;
 
 namespace ScarletRCON.Commands;
 
+[RconCommandCategory("Inventory Management")]
 public static class InventoryCommands {
   [RconCommand("giveitem", "Give an item to a connected player.")]
   public static string Give(string playerName, string prefabGUID, int amount) {

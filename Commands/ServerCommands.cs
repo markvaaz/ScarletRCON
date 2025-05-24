@@ -9,6 +9,7 @@ using Unity.Collections;
 
 namespace ScarletRCON.Commands;
 
+[RconCommandCategory("Server Administration")]
 public static class ServerCommands {
   [RconCommand("serverstats", "Show server statistics.")]
   public static string ServerStats() {
