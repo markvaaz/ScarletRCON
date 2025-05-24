@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>ScarletRCON.SourceSupport</id>
+    <version>1.1.2</version>
+    <authors>markvaaz</authors>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Source-only RCON support for ScarletRCON-compatible mods</description>
+    <tags>rcon v-rising</tags>
+  </metadata>
+  <files>
+    <file src="contentFiles/cs/any/RconCommandRegistrar.cs" target="contentFiles/cs/any/" />
+  </files>
+</package>
