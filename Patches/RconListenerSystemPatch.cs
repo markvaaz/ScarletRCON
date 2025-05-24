@@ -58,6 +58,22 @@ class RconInitializePatch {
 
       var fullResponse = CommandHandler.HandleCommand(cmd.ToLower(), argsResult);
 
+      /*
+        Why not just return fullResponse directly?
+
+        - Because fullResponse might exceed the RCON packet size limit,
+          which could cause transmission errors or truncated responses.
+
+        This is a temporary workaround. Since the RCON protocol doesn’t provide a way 
+        to identify which client sent a request, I'm currently allowing only one active
+        socket connection at a time to ensure responses are sent to the correct client.
+
+        I may implement a proper solution with connection tracking in the future. (Or maybe I won’t — we’ll see.)
+
+        If you have any suggestions for a better solution, please let me know.
+      */
+
+
       Send(fullResponse);
     } catch (Exception ex) {
       Console.WriteLine($"RCON command error: {ex}");
