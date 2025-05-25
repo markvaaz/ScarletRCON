@@ -26,7 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="RconCommandRegistrar.cs" />
+    <Compile Remove="contentFiles/cs/any/RconCommandRegistrar.cs" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
