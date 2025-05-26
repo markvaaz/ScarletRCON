@@ -2,6 +2,14 @@
 
 **ScarletRCON** is a flexible and powerful RCON command framework mod for V Rising that enhances server management by providing a rich set of built-in commands beyond the default RCON capabilities. It serves as a standalone RCON command handler that also offers an easy-to-use API for modders to dynamically create and register custom commands, enabling seamless integration across multiple mods
 
+---
+
+## Support & Donations
+
+<a href="https://www.patreon.com/bePatron?u=30093731" data-patreon-widget-type="become-patron-button"><img height='36' style='border:0px;height:36px;' src='https://i.imgur.com/o12xEqi.png' alt='Become a Patron' /></a>  <a href='https://ko-fi.com/F2F21EWEM7' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi6.png?v=6' alt='Buy Me a Coffee at ko-fi.com' /></a>
+
+---
+
 ## What is RCON?
 
 **RCON** (Remote Console) is a protocol used by server administrators to remotely execute commands and manage game servers in real time. For V Rising, RCON allows you to control your server, perform administrative actions, and automate tasks without needing direct access to the server’s hardware.
@@ -13,12 +21,6 @@ ScarletRCON builds on the standard RCON functionality by offering a more advance
 If you need a client to interact with ScarletRCON, check out the [ScarletRCON Client](https://thunderstore.io/c/v-rising/p/ScarletMods/ScarletRCON/wiki/3511-scarlet-rcon-client-optional/). This open-source tool provides a convenient way to send RCON commands to your V Rising server.
 
 Have ideas or feedback? [Leave your suggestion on GitHub](https://github.com/markvaaz/ScarletRCON).
-
----
-
-## Support & Donations
-
-<a href="https://www.patreon.com/bePatron?u=30093731" data-patreon-widget-type="become-patron-button"><img height='36' style='border:0px;height:36px;' src='https://i.imgur.com/o12xEqi.png' alt='Become a Patron' /></a>  <a href='https://ko-fi.com/F2F21EWEM7' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi6.png?v=6' alt='Buy Me a Coffee at ko-fi.com' /></a>
 
 ---
 
@@ -40,11 +42,11 @@ Have ideas or feedback? [Leave your suggestion on GitHub](https://github.com/mar
 
 ## Wiki Index
 
-- [Built-in Commands](https://thunderstore.io/c/v-rising/p/ScarletMods/ScarletRCON/wiki/3498-built-in-commands/)
-- [Custom Commands](https://thunderstore.io/c/v-rising/p/ScarletMods/ScarletRCON/wiki/3496-custom-commands/)
-- [Installation](https://thunderstore.io/c/v-rising/p/ScarletMods/ScarletRCON/wiki/3500-installation/)
-- [Integration](https://thunderstore.io/c/v-rising/p/ScarletMods/ScarletRCON/wiki/3497-integration/)
-- [Using RCON](https://thunderstore.io/c/v-rising/p/ScarletMods/ScarletRCON/wiki/3499-using-rcon/)
+- [All Commands](/c/v-rising/p/ScarletMods/ScarletRCON/wiki/3498-all-commands/)
+- [Custom Commands Guide](/c/v-rising/p/ScarletMods/ScarletRCON/wiki/3496-custom-commands-guide/)
+- [How to use RCON](/c/v-rising/p/ScarletMods/ScarletRCON/wiki/3499-how-to-use-rcon/)
+- [Integration Guide](/c/v-rising/p/ScarletMods/ScarletRCON/wiki/3497-integration-guide/)
+- [Scarlet RCON Client (Optional)](/c/v-rising/p/ScarletMods/ScarletRCON/wiki/3511-scarlet-rcon-client-optional/)
 
 
 ## Installation
@@ -70,3 +72,5 @@ Make sure BepInEx is installed and loaded **before** installing ScarletRCON.
    `BepInEx/plugins/ScarletRCON.dll`
 
 3. Start or restart your server.
+
+## Join the [modding community on Discord](https://discord.com/invite/QG2FmueAG9).
