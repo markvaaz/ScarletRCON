@@ -7,7 +7,19 @@ namespace ScarletRCON.Data;
 public class PlayerData() {
   public Entity UserEntity;
   public User User => UserEntity.Read<User>();
-  public string Name => User.CharacterName.ToString();
+  private string _name = null;
+  public string Name {
+    get {
+      if (string.IsNullOrEmpty(_name)) {
+        _name = User.CharacterName.ToString();
+      }
+
+      return _name;
+    }
+  }
+  public void SetName(string name) {
+    _name = name;
+  }
   public Entity CharacterEntity => User.LocalCharacter._Entity;
   public ulong PlatformId => User.PlatformId;
   public bool IsOnline => User.IsConnected;
