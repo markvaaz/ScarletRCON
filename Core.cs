@@ -9,7 +9,6 @@ namespace ScarletRCON;
 
 internal static class Core {
   public static World Server => GetServerWorld() ?? throw new Exception("There is no Server world (yet)...");
-  public static PrefabCollectionSystem PrefabCollectionSystem => Server.GetExistingSystemManaged<PrefabCollectionSystem>();
   public static EntityManager EntityManager => Server.EntityManager;
   public static ServerGameManager GameManager => Server.GetExistingSystemManaged<ServerScriptMapper>().GetServerGameManager();
   public static ServerBootstrapSystem ServerBootstrapSystem => Server.GetExistingSystemManaged<ServerBootstrapSystem>();
@@ -18,6 +17,7 @@ internal static class Core {
   public static UnitSpawnerUpdateSystem UnitSpawnerUpdateSystem => Server.GetExistingSystemManaged<UnitSpawnerUpdateSystem>();
   public static EntityCommandBufferSystem EntityCommandBufferSystem => Server.GetExistingSystemManaged<EntityCommandBufferSystem>();
   public static DebugEventsSystem DebugEventsSystem => Server.GetExistingSystemManaged<DebugEventsSystem>();
+  public static TriggerPersistenceSaveSystem TriggerPersistenceSaveSystem => Server.GetExistingSystemManaged<TriggerPersistenceSaveSystem>();
   public static bool hasInitialized = false;
   public static ManualLogSource Log => Plugin.LogInstance;
 

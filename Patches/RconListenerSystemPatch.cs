@@ -124,8 +124,3 @@ static class StringExtensions {
     return IL2CPP.ManagedStringToIl2Cpp(str);
   }
 }
-
-static class Test {
-  public static void Testa() {
-  }
-}

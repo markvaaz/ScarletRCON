@@ -8,9 +8,9 @@
 
 ScarletRCON builds on the standard RCON functionality by offering a more advanced command framework. It simplifies server management, supports custom commands from other mods, and enables powerful automation and integration—all through a unified RCON interface.
 
-## V Rising RCON Client
+## Scarlet RCON Client
 
-If you need a client to interact with ScarletRCON, check out the [V Rising RCON Client on GitHub](https://github.com/markvaaz/V-Rising-RCON). This open-source tool provides a convenient way to send RCON commands to your V Rising server.
+If you need a client to interact with ScarletRCON, check out the [ScarletRCON Client](https://thunderstore.io/c/v-rising/p/ScarletMods/ScarletRCON/wiki/3511-scarlet-rcon-client-optional/). This open-source tool provides a convenient way to send RCON commands to your V Rising server.
 
 Have ideas or feedback? [Leave your suggestion on GitHub](https://github.com/markvaaz/ScarletRCON).
 
@@ -18,14 +18,9 @@ Have ideas or feedback? [Leave your suggestion on GitHub](https://github.com/mar
 
 ## Support & Donations
 
-<a href='https://ko-fi.com/F2F21EWEM7' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi6.png?v=6' alt='Buy Me a Coffee at ko-fi.com' /></a>
+<a href="https://www.patreon.com/bePatron?u=30093731" data-patreon-widget-type="become-patron-button"><img height='36' style='border:0px;height:36px;' src='https://i.imgur.com/o12xEqi.png' alt='Become a Patron' /></a>  <a href='https://ko-fi.com/F2F21EWEM7' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi6.png?v=6' alt='Buy Me a Coffee at ko-fi.com' /></a>
 
 ---
-
-## New Features
-
-- Added support for defining RCON commands without requiring ScarletRCON as a direct dependency.
-- Added command categories for better organization.
 
 ## Features
 

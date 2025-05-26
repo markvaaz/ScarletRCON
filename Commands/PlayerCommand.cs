@@ -21,8 +21,8 @@ public static class PlayerCommand {
     }
 
     var result = $"- Character Name: {player.Name}\n";
-    result += $"- Steam ID: {player.PlatformID}\n";
-    result += $"- Profile URL: https://steamcommunity.com/profiles/{player.PlatformID}\n";
+    result += $"- Steam ID: {player.PlatformId}\n";
+    result += $"- Profile URL: https://steamcommunity.com/profiles/{player.PlatformId}\n";
 
     if (player.IsOnline) {
       result += $"- Connected Since: {player.ConnectedSince}\n";
@@ -40,7 +40,7 @@ public static class PlayerCommand {
     }
 
     SystemMessages.SendAll($"{player.Name} got ~kicked~ by an admin.");
-    KickBanService.Kick(player.PlatformID, player.UserEntity.Index);
+    KickBanService.Kick(player.PlatformId, player.UserEntity.Index);
 
     return $"Kicked {playerName}.";
   }
@@ -62,13 +62,13 @@ public static class PlayerCommand {
       return $"Player '{playerName}' was not found or is not connected.\nTry using the ID instead.";
     }
 
-    if (KickBanService.IsBanned(player.PlatformID)) {
+    if (KickBanService.IsBanned(player.PlatformId)) {
       return $"Player '{playerName}' is already banned.";
     }
 
     SystemMessages.SendAll($"{player.Name} got ~banned~ by an admin.");
 
-    KickBanService.AddBan(player.PlatformID);
+    KickBanService.AddBan(player.PlatformId);
 
     return $"Banned {playerName} by name.";
   }
@@ -105,7 +105,7 @@ public static class PlayerCommand {
       return $"Player '{playerName}' is already an admin.";
     }
 
-    AdminService.AddAdmin(player.PlatformID);
+    AdminService.AddAdmin(player.PlatformId);
 
     return $"Added {playerName} as admin.";
   }
@@ -131,7 +131,7 @@ public static class PlayerCommand {
       return $"Player '{playerName}' is not an admin.";
     }
 
-    AdminService.RemoveAdmin(player.PlatformID);
+    AdminService.RemoveAdmin(player.PlatformId);
 
     return $"Removed {playerName} as admin.";
   }

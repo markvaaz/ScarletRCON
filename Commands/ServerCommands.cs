@@ -6,11 +6,23 @@ using ScarletRCON.Services;
 using System.Reflection;
 using Unity.Entities;
 using Unity.Collections;
+using ProjectM.Network.HttpService;
+using ProjectM.Network;
+using ScarletRCON.Systems;
+using UnityEngine;
 
 namespace ScarletRCON.Commands;
 
 [RconCommandCategory("Server Administration")]
 public static class ServerCommands {
+
+  [RconCommand("save", "Save the game")]
+  public static string Save() {
+    var saveName = "Save_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".save";
+    Core.TriggerPersistenceSaveSystem.TriggerSave(SaveReason.ManualSave, saveName, GetServerRuntimeSettings());
+    return $"Game saved as '{saveName}'.";
+  }
+
   [RconCommand("serverstats", "Show server statistics.")]
   public static string ServerStats() {
     var players = PlayerService.GetAllConnected();
@@ -113,7 +125,7 @@ public static class ServerCommands {
     foreach (var player in admins) {
       if (!player.IsOnline) continue;
       count++;
-      result += $"- \x1b[97m{player.Name}\u001b[0m \u001b[90m({player.PlatformID})\u001b[0m\n";
+      result += $"- \x1b[97m{player.Name}\u001b[0m \u001b[90m({player.PlatformId})\u001b[0m\n";
     }
 
     result += $"Total connected admins: {count}";
@@ -129,7 +141,7 @@ public static class ServerCommands {
     foreach (var player in PlayerService.AllPlayers) {
       if (!player.IsOnline) continue;
       count++;
-      result += $"- \x1b[97m{player.Name}\u001b[0m \u001b[90m({player.PlatformID})\u001b[0m\n";
+      result += $"- \x1b[97m{player.Name}\u001b[0m \u001b[90m({player.PlatformId})\u001b[0m\n";
     }
 
     result += $"Total connected players: {count}";
@@ -164,5 +176,17 @@ public static class ServerCommands {
     entityQuery.Dispose();
 
     return result;
+  }
+
+  private static ServerRuntimeSettings GetServerRuntimeSettings() {
+    var query = Core.EntityManager.CreateEntityQuery(
+      ComponentType.ReadWrite<ServerRuntimeSettings>()
+    );
+
+    var settings = query.ToEntityArray(Allocator.Temp)[0].Read<ServerRuntimeSettings>();
+
+    query.Dispose();
+
+    return settings;
   }
 }

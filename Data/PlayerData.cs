@@ -1,24 +1,16 @@
 using Unity.Entities;
-using System.Collections.Generic;
 using ProjectM.Network;
-using System.Linq;
 using System;
-using System.Text.Json.Serialization;
 
 namespace ScarletRCON.Data;
 
-public class PlayerData {
-  [JsonIgnore]
-  public string Name { get; set; } = default;
-  [JsonIgnore]
-  public Entity UserEntity { get; set; } = default;
-  [JsonIgnore]
-  public Entity CharacterEntity { get; set; } = default;
-  [JsonIgnore]
-  public ulong PlatformID { get; set; } = 0;
-  [JsonIgnore]
-  public bool IsOnline { get; set; } = false;
-  public bool IsAdmin => UserEntity.Read<User>().IsAdmin;
-  [JsonIgnore]
-  public DateTime ConnectedSince { get; set; } = DateTime.MaxValue;
+public class PlayerData() {
+  public Entity UserEntity;
+  public User User => UserEntity.Read<User>();
+  public string Name => User.CharacterName.ToString();
+  public Entity CharacterEntity => User.LocalCharacter._Entity;
+  public ulong PlatformId => User.PlatformId;
+  public bool IsOnline => User.IsConnected;
+  public bool IsAdmin => User.IsAdmin;
+  public DateTime ConnectedSince => DateTimeOffset.FromUnixTimeSeconds(User.TimeLastConnected).DateTime;
 }

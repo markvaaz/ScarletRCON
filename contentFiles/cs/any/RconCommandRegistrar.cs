@@ -6,45 +6,52 @@ using System.Reflection;
 namespace ScarletRCON.Shared;
 
 [AttributeUsage(AttributeTargets.Class)]
-public class RconCommandCategoryAttribute(string groupName) : Attribute {
-  public string Name { get; } = groupName;
+public class RconCommandCategoryAttribute(string categoryName) : Attribute
+{
+  public string Name { get; } = categoryName;
 }
 
 [AttributeUsage(AttributeTargets.Method)]
-public class RconCommandAttribute(string name, string description = null, string usage = null) : Attribute {
+public class RconCommandAttribute(string name, string? description = null, string? usage = null) : Attribute
+{
   public string Name { get; set; } = name;
-  public string Description { get; set; } = description;
-  public string Usage { get; set; } = usage;
+  public string? Description { get; set; } = description;
+  public string? Usage { get; set; } = usage;
 }
 
-public static class RconCommandRegistrar {
+public static class RconCommandRegistrar
+{
   private static bool? _isScarletRconAvailable;
 
-  public static bool IsScarletRconAvailable() {
+  public static bool IsScarletRconAvailable()
+  {
     _isScarletRconAvailable ??= Type.GetType("ScarletRCON.CommandSystem.CommandHandler, ScarletRCON") != null;
     return _isScarletRconAvailable.Value;
   }
 
-  public static void RegisterAll() {
+  public static void RegisterAll()
+  {
     if (!IsScarletRconAvailable())
       return;
 
     Assembly assembly = Assembly.GetCallingAssembly();
     var prefix = $"{assembly.GetName().Name.ToLowerInvariant()}.";
 
-    // Coletar todos os comandos de uma vez
     var commandsToRegister = new List<(string, string, MethodInfo, string, string, string)>();
 
-    foreach (var type in assembly.GetTypes()) {
+    foreach (var type in assembly.GetTypes())
+    {
       var groupAttr = type.GetCustomAttribute<RconCommandCategoryAttribute>();
       string group = groupAttr?.Name ?? "Uncategorized";
 
-      foreach (var method in type.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)) {
+      foreach (var method in type.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
+      {
         var attr = method.GetCustomAttribute<RconCommandAttribute>();
         if (attr == null) continue;
 
         string usage = attr.Usage;
-        if (string.IsNullOrWhiteSpace(usage)) {
+        if (string.IsNullOrWhiteSpace(usage))
+        {
           var parameters = method.GetParameters();
           usage = parameters.Length == 0
               ? ""
@@ -56,7 +63,12 @@ public static class RconCommandRegistrar {
       }
     }
 
-    // Registrar todos os comandos de uma vez
+    if (commandHandlerType == null)
+      throw new InvalidOperationException("ScarletRCON.CommandSystem.CommandHandler not found.");
+
+    if (registerMethod == null)
+      throw new InvalidOperationException("ScarletRCON.CommandSystem.CommandHandler.RegisterExternalCommandsBatch not found.");
+
     var commandHandlerType = Type.GetType("ScarletRCON.CommandSystem.CommandHandler, ScarletRCON");
     var registerMethod = commandHandlerType.GetMethod(
         "RegisterExternalCommandsBatch",
@@ -64,5 +76,25 @@ public static class RconCommandRegistrar {
     );
 
     registerMethod.Invoke(null, [commandsToRegister]);
+  }
+
+  public static void UnregisterAssembly()
+  {
+    if (!IsScarletRconAvailable())
+      return;
+
+    var commandHandlerType = Type.GetType("ScarletRCON.CommandSystem.CommandHandler, ScarletRCON");
+    var unregisterMethod = commandHandlerType.GetMethod(
+        "UnregisterAssembly",
+        BindingFlags.Public | BindingFlags.Static
+    );
+
+    if (commandHandlerType == null)
+      throw new InvalidOperationException("ScarletRCON.CommandSystem.CommandHandler not found.");
+
+    if (unregisterMethod == null)
+      throw new InvalidOperationException("ScarletRCON.CommandSystem.CommandHandler.UnregisterAssembly not found.");
+
+    unregisterMethod.Invoke(null, [Assembly.GetCallingAssembly()]);
   }
 }
