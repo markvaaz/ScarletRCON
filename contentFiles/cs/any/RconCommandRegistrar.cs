@@ -63,17 +63,17 @@ public static class RconCommandRegistrar
       }
     }
 
-    if (commandHandlerType == null)
-      throw new InvalidOperationException("ScarletRCON.CommandSystem.CommandHandler not found.");
-
-    if (registerMethod == null)
-      throw new InvalidOperationException("ScarletRCON.CommandSystem.CommandHandler.RegisterExternalCommandsBatch not found.");
-
     var commandHandlerType = Type.GetType("ScarletRCON.CommandSystem.CommandHandler, ScarletRCON");
     var registerMethod = commandHandlerType.GetMethod(
         "RegisterExternalCommandsBatch",
         BindingFlags.Public | BindingFlags.Static
     );
+
+    if (commandHandlerType == null)
+      throw new InvalidOperationException("ScarletRCON.CommandSystem.CommandHandler not found.");
+
+    if (registerMethod == null)
+      throw new InvalidOperationException("ScarletRCON.CommandSystem.CommandHandler.RegisterExternalCommandsBatch not found.");
 
     registerMethod.Invoke(null, [commandsToRegister]);
   }
