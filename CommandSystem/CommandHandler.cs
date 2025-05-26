@@ -7,8 +7,8 @@ namespace ScarletRCON.CommandSystem;
 
 public static class CommandHandler {
   internal static Dictionary<string, List<RconCommandDefinition>> Commands { get; private set; } = [];
-  public static Dictionary<string, List<RconCommandDefinition>> CommandGroups { get; private set; } = [];
-  public static Dictionary<string, List<RconCommandDefinition>> CustomCommandGroups { get; private set; } = [];
+  public static Dictionary<string, List<RconCommandDefinition>> CommandCategories { get; private set; } = [];
+  public static Dictionary<string, List<RconCommandDefinition>> CustomCommandCategories { get; private set; } = [];
 
   internal static void Initialize() {
     RegisterAll(Assembly.GetExecutingAssembly());
@@ -61,10 +61,12 @@ public static class CommandHandler {
 
         Commands[fullCommandName].Add(def);
 
-        if (!CommandGroups.ContainsKey(group))
-          CommandGroups[group] = [];
+        if (!CommandCategories.ContainsKey(group))
+          CommandCategories[group] = [];
 
-        CommandGroups[group].Add(def);
+        CommandCategories[group].Add(def);
+
+        CommandCategories[group] = [.. CommandCategories[group].OrderBy(c => c.Name)];
       }
     }
 
@@ -77,14 +79,16 @@ public static class CommandHandler {
       var def = new RconCommandDefinition(fullCommandName, description, usage, method, null);
 
       if (!Commands.ContainsKey(fullCommandName))
-        Commands[fullCommandName] = new List<RconCommandDefinition>();
+        Commands[fullCommandName] = [];
 
       Commands[fullCommandName].Add(def);
 
-      if (!CustomCommandGroups.ContainsKey(group))
-        CustomCommandGroups[group] = new List<RconCommandDefinition>();
+      if (!CustomCommandCategories.ContainsKey(group))
+        CustomCommandCategories[group] = [];
 
-      CustomCommandGroups[group].Add(def);
+      CustomCommandCategories[group].Add(def);
+
+      CustomCommandCategories[group] = [.. CustomCommandCategories[group].OrderBy(c => c.Name)];
     }
 
     SortCommands();
@@ -129,9 +133,9 @@ public static class CommandHandler {
     }
 
     // Limpar grupos vazios
-    var emptyGroups = CommandGroups.Where(g => g.Value.Count == 0).Select(g => g.Key).ToList();
+    var emptyGroups = CommandCategories.Where(g => g.Value.Count == 0).Select(g => g.Key).ToList();
     foreach (var group in emptyGroups) {
-      CommandGroups.Remove(group);
+      CommandCategories.Remove(group);
     }
   }
 
@@ -141,10 +145,10 @@ public static class CommandHandler {
       Commands.Remove(key);
     }
 
-    foreach (var group in CommandGroups.Keys.ToList()) {
-      CommandGroups[group].RemoveAll(cmd => cmd.Name.StartsWith(prefix));
-      if (CommandGroups[group].Count == 0) {
-        CommandGroups.Remove(group);
+    foreach (var group in CommandCategories.Keys.ToList()) {
+      CommandCategories[group].RemoveAll(cmd => cmd.Name.StartsWith(prefix));
+      if (CommandCategories[group].Count == 0) {
+        CommandCategories.Remove(group);
       }
     }
   }

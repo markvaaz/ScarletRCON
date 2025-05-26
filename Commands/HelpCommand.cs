@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using ScarletRCON.CommandSystem;
 
 namespace ScarletRCON.Commands;
@@ -31,16 +34,11 @@ public static class HelpCommand {
   public static string ListAll() {
     string result = "";
 
-    foreach (var commands in CommandHandler.CommandGroups) {
-      result += $"\n\x1b[97m{commands.Key}\u001b[0m:\n";
-      foreach (var command in commands.Value) {
-        result += $"\u001b[37m- {command.Name}\u001b[0m:\u001b[90m{(string.IsNullOrEmpty(command.Usage) ? "" : " " + command.Usage)} - {command.Description}\u001b[0m\n";
-      }
-    }
+    var orderedCategories = GetOrderedCategories();
 
-    foreach (var commands in CommandHandler.CustomCommandGroups) {
-      result += $"\n\x1b[97m{commands.Key}\u001b[0m:\n";
-      foreach (var command in commands.Value) {
+    foreach (var category in orderedCategories) {
+      result += $"\n\x1b[97m{category.Key}\u001b[0m:\n";
+      foreach (var command in category.Value.OrderBy(c => c.Name, StringComparer.OrdinalIgnoreCase)) {
         result += $"\u001b[37m- {command.Name}\u001b[0m:\u001b[90m{(string.IsNullOrEmpty(command.Usage) ? "" : " " + command.Usage)} - {command.Description}\u001b[0m\n";
       }
     }
@@ -48,5 +46,22 @@ public static class HelpCommand {
     result += "\nTotal commands: " + CommandHandler.Commands.Count;
 
     return result;
+  }
+
+  public static IEnumerable<KeyValuePair<string, List<RconCommandDefinition>>> GetOrderedCategories() {
+    var mergedCategories = new Dictionary<string, List<RconCommandDefinition>>(StringComparer.OrdinalIgnoreCase);
+
+    foreach (var kvp in CommandHandler.CommandCategories)
+      mergedCategories[kvp.Key] = [.. kvp.Value];
+
+    foreach (var custom in CommandHandler.CustomCommandCategories) {
+      if (mergedCategories.TryGetValue(custom.Key, out var list)) {
+        list.AddRange(custom.Value);
+      } else {
+        mergedCategories[custom.Key] = [.. custom.Value];
+      }
+    }
+
+    return mergedCategories.OrderBy(x => x.Key, StringComparer.OrdinalIgnoreCase);
   }
 }

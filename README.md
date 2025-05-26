@@ -22,6 +22,12 @@ Have ideas or feedback? [Leave your suggestion on GitHub](https://github.com/mar
 
 ---
 
+## New Features
+
+- Added save command.
+- Added support for defining RCON commands without requiring ScarletRCON as a direct dependency.
+- Added command categories for better organization.
+
 ## Features
 
 * Provides a simple API to register RCON commands.
