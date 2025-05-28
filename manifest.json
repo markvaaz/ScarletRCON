@@ -1,6 +1,6 @@
 {
   "name": "ScarletRCON",
-  "version_number": "1.1.6",
+  "version_number": "1.1.7",
   "website_url": "https://github.com/markvaaz/ScarletRCON",
   "description": "Enhance server administration with powerful, ready-to-use RCON commands that go far beyond the default capabilities. Are you a Modder? Easily build and register your own custom RCON commands without making ScarletRCON a direct dependency.",
   "dependencies": [
