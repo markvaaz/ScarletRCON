@@ -24,5 +24,5 @@ public class PlayerData() {
   public ulong PlatformId => User.PlatformId;
   public bool IsOnline => User.IsConnected;
   public bool IsAdmin => User.IsAdmin;
-  public DateTime ConnectedSince => DateTimeOffset.FromUnixTimeSeconds(User.TimeLastConnected).DateTime;
+  public DateTime ConnectedSince => new DateTime(User.TimeLastConnected, DateTimeKind.Utc).ToLocalTime();
 }

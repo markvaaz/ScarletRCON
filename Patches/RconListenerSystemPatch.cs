@@ -35,7 +35,7 @@ class RconInitializePatch {
 
     foreach (var tcpClient in server._clients) {
       if (!tcpClient.Connected) continue;
-      return tcpClient.GetStream()._streamSocket;
+      return tcpClient.Client;
     }
 
     return null;
@@ -72,7 +72,6 @@ class RconInitializePatch {
 
         If you have any suggestions for a better solution, please let me know.
       */
-
 
       Send(fullResponse);
     } catch (Exception ex) {
