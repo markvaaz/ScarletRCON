@@ -7,6 +7,7 @@ using RCONServerLib;
 using ScarletRCON.CommandSystem;
 using Il2CppSystem.Net.Sockets;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
+using ScarletCore.Utils;
 
 namespace ScarletRCON.Patches;
 
@@ -74,8 +75,10 @@ class RconInitializePatch {
       */
 
       Send(fullResponse);
+      // return fullResponse.ToIntPtr();
     } catch (Exception ex) {
       Console.WriteLine($"RCON command error: {ex}");
+      Log.Error($"Error processing command: {ex.Message}");
     }
   }
 
@@ -113,8 +116,8 @@ class RconInitializePatch {
 [HarmonyPatch(typeof(RconListenerSystem), nameof(RconListenerSystem.OnUpdate))]
 class RconUpdatePatch {
   static void Postfix() {
-    if (CommandExecutor.Count == 0) return;
-    CommandExecutor.ProcessQueue();
+    if (ActionExecutor.Count == 0) return;
+    ActionExecutor.ProcessQueue();
   }
 }
 

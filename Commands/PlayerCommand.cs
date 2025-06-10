@@ -1,12 +1,11 @@
 using ProjectM;
-using ScarletRCON.Services;
 using ScarletRCON.CommandSystem;
 using Stunlock.Core;
-using ScarletRCON.Systems;
-using ProjectM.Network;
 using Unity.Transforms;
 using ProjectM.Shared;
 using Unity.Mathematics;
+using ScarletCore.Services;
+using ScarletCore.Systems;
 
 namespace ScarletRCON.Commands;
 
@@ -14,6 +13,7 @@ namespace ScarletRCON.Commands;
 public static class PlayerCommand {
   private static PrefabGUID FreezeBuffGUID = new(-1527408583);
   private static PrefabGUID WoundedBuffGUID = new(-1992158531);
+
   [RconCommand("playerinfo", "Show info about a connected player.")]
   public static string PlayerInfo(string playerName) {
     if (!PlayerService.TryGetByName(playerName, out var player)) {
@@ -39,8 +39,8 @@ public static class PlayerCommand {
       return $"Player '{playerName}' was not found or is not connected.";
     }
 
-    SystemMessages.SendAll($"{player.Name} got ~kicked~ by an admin.");
-    KickBanService.Kick(player.PlatformId, player.UserEntity.Index);
+    MessageService.SendAll($"{player.Name} got ~kicked~ by an admin.");
+    KickBanService.Kick(player.PlatformId);
 
     return $"Kicked {playerName}.";
   }
@@ -51,7 +51,7 @@ public static class PlayerCommand {
       return $"Player '{playerId}' is already banned.";
     }
 
-    KickBanService.AddBan(playerId);
+    KickBanService.Ban(playerId);
 
     return $"Banned {playerId} by ID.";
   }
@@ -66,9 +66,9 @@ public static class PlayerCommand {
       return $"Player '{playerName}' is already banned.";
     }
 
-    SystemMessages.SendAll($"{player.Name} got ~banned~ by an admin.");
+    MessageService.SendAll($"{player.Name} got ~banned~ by an admin.");
 
-    KickBanService.AddBan(player.PlatformId);
+    KickBanService.Ban(player.PlatformId);
 
     return $"Banned {playerName} by name.";
   }
@@ -79,7 +79,7 @@ public static class PlayerCommand {
       return $"Player '{playerId}' is not banned.";
     }
 
-    KickBanService.RemoveBan(playerId);
+    KickBanService.Unban(playerId);
 
     return $"Unbanned {playerId}.";
   }
@@ -146,11 +146,11 @@ public static class PlayerCommand {
       return "Invalid PrefabGUID.";
     }
 
-    if (BuffUtilitySystem.HasBuff(player.CharacterEntity, guid)) {
+    if (BuffService.HasBuff(player.CharacterEntity, guid)) {
       return $"Player {playerName} already has buff {guid.GuidHash}.";
     }
 
-    if (!BuffUtilitySystem.TryApplyBuff(player.CharacterEntity, guid, duration)) {
+    if (!BuffService.TryApplyBuff(player.CharacterEntity, guid, duration)) {
       return $"Failed to apply buff {prefabGUID} to {playerName}.";
     }
 
@@ -167,11 +167,11 @@ public static class PlayerCommand {
       return "Invalid PrefabGUID.";
     }
 
-    if (!BuffUtilitySystem.HasBuff(player.CharacterEntity, guid)) {
+    if (!BuffService.HasBuff(player.CharacterEntity, guid)) {
       return $"Player {playerName} does not have buff {guid.GuidHash}.";
     }
 
-    BuffUtilitySystem.RemoveBuff(player.CharacterEntity, guid);
+    BuffService.TryRemoveBuff(player.CharacterEntity, guid);
 
     return $"Removed buff {prefabGUID} from {playerName}.";
   }
@@ -182,15 +182,15 @@ public static class PlayerCommand {
       return $"Player '{playerName}' was not found or is not connected.";
     }
 
-    if (BuffUtilitySystem.HasBuff(player.CharacterEntity, FreezeBuffGUID)) {
+    if (BuffService.HasBuff(player.CharacterEntity, FreezeBuffGUID)) {
       return $"Player {playerName} is already frozen.";
     }
 
-    if (!BuffUtilitySystem.TryApplyBuff(player.CharacterEntity, FreezeBuffGUID, duration)) {
+    if (!BuffService.TryApplyBuff(player.CharacterEntity, FreezeBuffGUID, duration)) {
       return $"Failed to freeze {playerName}.";
     }
 
-    SystemMessages.Send(player.UserEntity.Read<User>(), $"You’ve been ~frozen~ in place for ~{duration}~ seconds by an admin!");
+    MessageService.Send(player.User, $"You’ve been ~frozen~ in place for ~{duration}~ seconds by an admin!");
 
     return $"Frozen {playerName}.";
   }
@@ -201,13 +201,13 @@ public static class PlayerCommand {
       return $"Player '{playerName}' was not found or is not connected.";
     }
 
-    if (!BuffUtilitySystem.HasBuff(player.CharacterEntity, FreezeBuffGUID)) {
+    if (!BuffService.HasBuff(player.CharacterEntity, FreezeBuffGUID)) {
       return $"Player {playerName} is not frozen.";
     }
 
-    BuffUtilitySystem.RemoveBuff(player.CharacterEntity, FreezeBuffGUID);
+    BuffService.TryRemoveBuff(player.CharacterEntity, FreezeBuffGUID);
 
-    SystemMessages.Send(player.UserEntity.Read<User>(), "You have been ~unfrozen~ by an admin!");
+    MessageService.Send(player.User, "You have been ~unfrozen~ by an admin!");
 
     return $"Unfroze {playerName}.";
   }
@@ -227,7 +227,7 @@ public static class PlayerCommand {
 
     character.Write(health);
 
-    SystemMessages.Send(player.UserEntity.Read<User>(), "You have been ~healed~ by an admin!");
+    MessageService.Send(player.User, "You have been ~healed~ by an admin!");
 
     return $"Healed {player.Name}.";
   }
@@ -238,11 +238,11 @@ public static class PlayerCommand {
       return $"Player '{playerName}' was not found or is not connected.";
     }
 
-    if (!BuffUtilitySystem.TryApplyBuff(player.CharacterEntity, WoundedBuffGUID)) {
+    if (!BuffService.TryApplyBuff(player.CharacterEntity, WoundedBuffGUID)) {
       return $"Failed to wound {playerName}.";
     }
 
-    SystemMessages.Send(player.UserEntity.Read<User>(), "You have been ~wounded~ by an admin!");
+    MessageService.Send(player.User, "You have been ~wounded~ by an admin!");
 
     return $"Healed {player.Name}.";
   }
@@ -253,9 +253,9 @@ public static class PlayerCommand {
       return $"Player '{playerName}' was not found or is not connected.";
     }
 
-    StatChangeUtility.KillEntity(Core.EntityManager, player.CharacterEntity, player.CharacterEntity, Core.GameManager.ServerTime, StatChangeReason.Default, true);
+    StatChangeUtility.KillEntity(GameSystems.EntityManager, player.CharacterEntity, player.CharacterEntity, GameSystems.ServerGameManager.ServerTime, StatChangeReason.Default, true);
 
-    SystemMessages.Send(player.UserEntity.Read<User>(), "You have been ~killed~ by an admin!");
+    MessageService.Send(player.User, "You have been ~killed~ by an admin!");
 
     return $"Healed {player.Name}.";
   }
@@ -270,9 +270,9 @@ public static class PlayerCommand {
 
     var health = character.Read<Health>();
 
-    if (BuffUtility.TryGetBuff(Core.EntityManager, character, WoundedBuffGUID, out var buff)) {
+    if (BuffUtility.TryGetBuff(GameSystems.EntityManager, character, WoundedBuffGUID, out var buff)) {
 
-      DestroyUtility.Destroy(Core.EntityManager, buff, DestroyDebugReason.TryRemoveBuff);
+      DestroyUtility.Destroy(GameSystems.EntityManager, buff, DestroyDebugReason.TryRemoveBuff);
 
       health.Value = health.MaxHealth;
       health.MaxRecoveryHealth = health.MaxHealth;
@@ -283,11 +283,11 @@ public static class PlayerCommand {
     if (health.IsDead) {
       var pos = character.Read<LocalToWorld>().Position;
 
-      var buffer = Core.EntityCommandBufferSystem.CreateCommandBuffer();
-      Core.ServerBootstrapSystem.RespawnCharacter(buffer, player.UserEntity, new() { value = pos }, character);
+      var buffer = GameSystems.EntityCommandBufferSystem.CreateCommandBuffer();
+      GameSystems.ServerBootstrapSystem.RespawnCharacter(buffer, player.UserEntity, new() { value = pos }, character);
     }
 
-    SystemMessages.Send(player.UserEntity.Read<User>(), "You've been ~revived~ by an admin");
+    MessageService.Send(player.User, "You've been ~revived~ by an admin");
 
     return $"Revived {player.Name}.";
   }
@@ -299,9 +299,9 @@ public static class PlayerCommand {
 
       var health = character.Read<Health>();
 
-      if (BuffUtility.TryGetBuff(Core.EntityManager, character, WoundedBuffGUID, out var buff)) {
+      if (BuffUtility.TryGetBuff(GameSystems.EntityManager, character, WoundedBuffGUID, out var buff)) {
 
-        DestroyUtility.Destroy(Core.EntityManager, buff, DestroyDebugReason.TryRemoveBuff);
+        DestroyUtility.Destroy(GameSystems.EntityManager, buff, DestroyDebugReason.TryRemoveBuff);
 
         health.Value = health.MaxHealth;
         health.MaxRecoveryHealth = health.MaxHealth;
@@ -312,11 +312,11 @@ public static class PlayerCommand {
       if (health.IsDead) {
         var pos = character.Read<LocalToWorld>().Position;
 
-        var buffer = Core.EntityCommandBufferSystem.CreateCommandBuffer();
-        Core.ServerBootstrapSystem.RespawnCharacter(buffer, player.UserEntity, new() { value = pos }, character);
+        var buffer = GameSystems.EntityCommandBufferSystem.CreateCommandBuffer();
+        GameSystems.ServerBootstrapSystem.RespawnCharacter(buffer, player.UserEntity, new() { value = pos }, character);
       }
 
-      SystemMessages.Send(player.UserEntity.Read<User>(), "You've been ~revived~ by an admin");
+      MessageService.Send(player.User, "You've been ~revived~ by an admin");
     }
 
     return "Revived all players.";
@@ -326,7 +326,7 @@ public static class PlayerCommand {
   public static string ReviveRadius(int x, int y, int z, int radius) {
     foreach (var player in PlayerService.AllPlayers) {
       var character = player.CharacterEntity;
-      var position = player.CharacterEntity.GetPosition();
+      var position = player.CharacterEntity.Position();
 
       var distance = math.distance(new float3(x, 0, z), new float3(position.x, 0, position.z));
 
@@ -334,9 +334,9 @@ public static class PlayerCommand {
 
       var health = character.Read<Health>();
 
-      if (BuffUtility.TryGetBuff(Core.EntityManager, character, WoundedBuffGUID, out var buff)) {
+      if (BuffUtility.TryGetBuff(GameSystems.EntityManager, character, WoundedBuffGUID, out var buff)) {
 
-        DestroyUtility.Destroy(Core.EntityManager, buff, DestroyDebugReason.TryRemoveBuff);
+        DestroyUtility.Destroy(GameSystems.EntityManager, buff, DestroyDebugReason.TryRemoveBuff);
 
         health.Value = health.MaxHealth;
         health.MaxRecoveryHealth = health.MaxHealth;
@@ -347,11 +347,11 @@ public static class PlayerCommand {
       if (health.IsDead) {
         var pos = character.Read<LocalToWorld>().Position;
 
-        var buffer = Core.EntityCommandBufferSystem.CreateCommandBuffer();
-        Core.ServerBootstrapSystem.RespawnCharacter(buffer, player.UserEntity, new() { value = pos }, character);
+        var buffer = GameSystems.EntityCommandBufferSystem.CreateCommandBuffer();
+        GameSystems.ServerBootstrapSystem.RespawnCharacter(buffer, player.UserEntity, new() { value = pos }, character);
       }
 
-      SystemMessages.Send(player.UserEntity.Read<User>(), "You've been ~revived~ by an admin");
+      MessageService.Send(player.User, "You've been ~revived~ by an admin");
     }
 
     return "Revived all players.";
@@ -363,11 +363,11 @@ public static class PlayerCommand {
       return $"Player '{playerName}' was not found or is not connected.";
     }
 
-    var targetPos = targetPlayer.CharacterEntity.GetPosition();
+    var targetPos = targetPlayer.CharacterEntity.Position();
 
     foreach (var player in PlayerService.AllPlayers) {
       var character = player.CharacterEntity;
-      var position = player.CharacterEntity.GetPosition();
+      var position = player.CharacterEntity.Position();
 
       var distance = math.distance(new float3(targetPos.x, 0, targetPos.z), new float3(position.x, 0, position.z));
 
@@ -375,9 +375,9 @@ public static class PlayerCommand {
 
       var health = character.Read<Health>();
 
-      if (BuffUtility.TryGetBuff(Core.EntityManager, character, WoundedBuffGUID, out var buff)) {
+      if (BuffUtility.TryGetBuff(GameSystems.EntityManager, character, WoundedBuffGUID, out var buff)) {
 
-        DestroyUtility.Destroy(Core.EntityManager, buff, DestroyDebugReason.TryRemoveBuff);
+        DestroyUtility.Destroy(GameSystems.EntityManager, buff, DestroyDebugReason.TryRemoveBuff);
 
         health.Value = health.MaxHealth;
         health.MaxRecoveryHealth = health.MaxHealth;
@@ -388,13 +388,83 @@ public static class PlayerCommand {
       if (health.IsDead) {
         var pos = character.Read<LocalToWorld>().Position;
 
-        var buffer = Core.EntityCommandBufferSystem.CreateCommandBuffer();
-        Core.ServerBootstrapSystem.RespawnCharacter(buffer, player.UserEntity, new() { value = pos }, character);
+        var buffer = GameSystems.EntityCommandBufferSystem.CreateCommandBuffer();
+        GameSystems.ServerBootstrapSystem.RespawnCharacter(buffer, player.UserEntity, new() { value = pos }, character);
       }
 
-      SystemMessages.Send(player.UserEntity.Read<User>(), "You've been ~revived~ by an admin");
+      MessageService.Send(player.User, "You've been ~revived~ by an admin");
     }
 
     return "Revived all players.";
+  }
+
+  /*
+
+
+
+    MAP REVEAL COMMANDS
+
+
+
+  */
+
+  [RconCommand("revealmap", "Reveal the map for a connected player.")]
+  public static string RevealMap(string playerName) {
+    if (!PlayerService.TryGetByName(playerName, out var player) || !player.IsOnline) {
+      return $"Player '{playerName}' was not found or is not connected.";
+    }
+
+    RevealMapService.RevealFullMap(player);
+
+    MessageService.Send(player.User, "Your map has been ~revealed~ by an admin!");
+
+    return $"Revealed map for {player.Name}.";
+  }
+
+  [RconCommand("revealmapradius", "Reveal the map within a radius of specific coordinates for a connected player.")]
+  public static string RevealMapRadius(string playerName, float x, float z, float radius) {
+    if (!PlayerService.TryGetByName(playerName, out var player) || !player.IsOnline) {
+      return $"Player '{playerName}' was not found or is not connected.";
+    }
+
+    if (radius <= 0) {
+      return "Radius must be greater than 0.";
+    }
+
+    RevealMapService.RevealMapRadius(player, new(x, 0, z), radius);
+
+    return $"Revealed map for {player.Name} within radius {radius} around ({x}, {z}).";
+  }
+
+  [RconCommand("revealmapradius", "Reveal the map within a radius around another player.")]
+  public static string RevealMapRadius(string playerName, string targetPlayerName, float radius) {
+    if (!PlayerService.TryGetByName(playerName, out var player) || !player.IsOnline) {
+      return $"Player '{playerName}' was not found or is not connected.";
+    }
+
+    if (!PlayerService.TryGetByName(targetPlayerName, out var centerPlayer) || !centerPlayer.IsOnline) {
+      return $"Center player '{targetPlayerName}' was not found or is not connected.";
+    }
+
+    if (radius <= 0) {
+      return "Radius must be greater than 0.";
+    }
+
+    RevealMapService.RevealMapRadius(player, centerPlayer.CharacterEntity.Position(), radius);
+
+    return $"Revealed map for {player.Name} within radius {radius} around {targetPlayerName}.";
+  }
+
+  [RconCommand("hidemap", "Hide/obscure the map for a connected player.")]
+  public static string HideMap(string playerName) {
+    if (!PlayerService.TryGetByName(playerName, out var player) || !player.IsOnline) {
+      return $"Player '{playerName}' was not found or is not connected.";
+    }
+
+    RevealMapService.HideFullMap(player);
+
+    MessageService.Send(player.User, "Your map has been ~hidden~ by an admin!");
+
+    return $"Hidden map for {player.Name}.";
   }
 }

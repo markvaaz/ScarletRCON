@@ -1,5 +1,5 @@
 using ScarletRCON.CommandSystem;
-using ScarletRCON.Services;
+using ScarletCore.Services;
 using Stunlock.Core;
 
 namespace ScarletRCON.Commands;
@@ -20,7 +20,7 @@ public static class InventoryCommands {
       return $"Player '{playerName}' has a full inventory.";
     }
 
-    InventoryService.AddItemToInventory(player.CharacterEntity, guid, amount);
+    InventoryService.AddItem(player.CharacterEntity, guid, amount);
 
     return $"Given {amount} {guid.GuidHash} to {playerName}.";
   }
@@ -33,7 +33,7 @@ public static class InventoryCommands {
 
     foreach (var player in PlayerService.AllPlayers) {
       if (!player.IsOnline || InventoryService.IsFull(player.CharacterEntity)) continue;
-      InventoryService.AddItemToInventory(player.CharacterEntity, guid, amount);
+      InventoryService.AddItem(player.CharacterEntity, guid, amount);
     }
 
     return $"Given {amount} {guid} to all players.";
@@ -53,7 +53,7 @@ public static class InventoryCommands {
       return $"Player '{playerName}' does not have {amount} {guid.GuidHash} in their inventory.";
     }
 
-    InventoryService.RemoveItemFromInventory(player.CharacterEntity, guid, amount);
+    InventoryService.RemoveItem(player.CharacterEntity, guid, amount);
 
     return $"Removed {amount} {guid.GuidHash} from {playerName}'s inventory.";
   }
@@ -66,7 +66,7 @@ public static class InventoryCommands {
 
     foreach (var player in PlayerService.AllPlayers) {
       if (!player.IsOnline || !InventoryService.HasAmount(player.CharacterEntity, guid, amount)) continue;
-      InventoryService.RemoveItemFromInventory(player.CharacterEntity, guid, amount);
+      InventoryService.RemoveItem(player.CharacterEntity, guid, amount);
     }
 
     return $"Removed {amount} {guid} from all players' inventories.";

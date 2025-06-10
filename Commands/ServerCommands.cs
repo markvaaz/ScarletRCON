@@ -2,14 +2,11 @@ using ProjectM;
 using System;
 using System.Diagnostics;
 using ScarletRCON.CommandSystem;
-using ScarletRCON.Services;
+using ScarletCore.Services;
 using System.Reflection;
 using Unity.Entities;
 using Unity.Collections;
-using ProjectM.Network.HttpService;
-using ProjectM.Network;
-using ScarletRCON.Systems;
-using UnityEngine;
+using ScarletCore.Systems;
 
 namespace ScarletRCON.Commands;
 
@@ -19,7 +16,7 @@ public static class ServerCommands {
   [RconCommand("save", "Save the game")]
   public static string Save() {
     var saveName = "Save_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".save";
-    Core.TriggerPersistenceSaveSystem.TriggerSave(SaveReason.ManualSave, saveName, GetServerRuntimeSettings());
+    GameSystems.TriggerPersistenceSaveSystem.TriggerSave(SaveReason.ManualSave, saveName, GetServerRuntimeSettings());
     return $"Game saved as '{saveName}'.";
   }
 
@@ -151,35 +148,29 @@ public static class ServerCommands {
 
   [RconCommand("listclans", "List all clans.")]
   public static string ListClans() {
-    var entityQuery = Core.EntityManager.CreateEntityQuery(
-      ComponentType.ReadOnly<ClanTeam>()
-    ).ToEntityArray(Allocator.TempJob);
-
-    if (entityQuery.Length == 0) return "No clans found.";
-
     string result = "Clans:\n";
     string white = "\x1b[97m";
     string gray = "\u001b[90m";
     string reset = "\x1b[0m";
 
-    foreach (var entity in entityQuery) {
-      if (!entity.Has<ClanTeam>()) continue;
+    var clans = ClanService.GetClanEntities();
 
-      var clan = entity.Read<ClanTeam>();
-      var clanName = clan.Name.ToString();
+    if (clans.Length == 0) return "No clans found.";
+
+    foreach (var clan in clans) {
+
+      var clanName = clan.Read<ClanTeam>().Name.ToString();
 
       result += $"-{white} Clan Name{reset}: {gray}{clanName}{reset}\n";
     }
 
-    result += $"Total clans: {entityQuery.Length}";
-
-    entityQuery.Dispose();
+    clans.Dispose();
 
     return result;
   }
 
   private static ServerRuntimeSettings GetServerRuntimeSettings() {
-    var query = Core.EntityManager.CreateEntityQuery(
+    var query = GameSystems.EntityManager.CreateEntityQuery(
       ComponentType.ReadWrite<ServerRuntimeSettings>()
     );
 

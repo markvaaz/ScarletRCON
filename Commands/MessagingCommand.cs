@@ -1,7 +1,6 @@
 using System.Collections.Generic;
-using ScarletRCON.Systems;
 using ScarletRCON.CommandSystem;
-using ScarletRCON.Services;
+using ScarletCore.Services;
 using ProjectM.Network;
 
 namespace ScarletRCON.Commands;
@@ -12,7 +11,7 @@ public static class MessagingCommands {
   public static string Announce(List<string> args) {
     string message = string.Join(" ", args);
 
-    SystemMessages.SendAll(message);
+    MessageService.SendAll(message);
 
     return $"Sent announcement: {message}";
   }
@@ -21,7 +20,7 @@ public static class MessagingCommands {
   public static string AnnounceRestart(int minutes) {
     string message = $"The server will restart in {minutes} minutes!";
 
-    SystemMessages.SendAll(message);
+    MessageService.SendAll(message);
 
     return $"Sent announcement: {message}";
   }
@@ -32,7 +31,7 @@ public static class MessagingCommands {
       return $"Player '{playerName}' was not found or is not connected.";
     }
 
-    SystemMessages.Send(player.UserEntity.Read<User>(), message);
+    MessageService.Send(player.UserEntity.Read<User>(), message);
 
     return $"Sent private message to {player.Name}: {message}";
   }

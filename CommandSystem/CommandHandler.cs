@@ -116,26 +116,53 @@ public static class CommandHandler {
   }
 
   public static void UnregisterAssembly(Assembly asm) {
-    var toRemove = new List<string>();
+    Console.WriteLine($"[UnregisterAssembly] Called for assembly: {asm.FullName}");
 
-    foreach (var kvp in Commands) {
-      kvp.Value.RemoveAll(cmdDef =>
-          cmdDef.Method.DeclaringType?.Assembly == asm ||
-          (cmdDef.Method.DeclaringType == null && cmdDef.Method.Module.Assembly == asm));
+    var assemblyName = asm.GetName().Name.ToLowerInvariant();
+    var prefix = assemblyName == "scarletrcon" ? string.Empty : $"{assemblyName}.";
 
-      if (kvp.Value.Count == 0) {
-        toRemove.Add(kvp.Key);
+    Console.WriteLine($"[UnregisterAssembly] Using prefix: '{prefix}'");
+
+    var commandsToRemove = Commands.Where(kvp =>
+      kvp.Value.Any(cmd => cmd.Method.DeclaringType?.Assembly == asm))
+      .Select(kvp => kvp.Key)
+      .ToList();
+
+    Console.WriteLine($"[UnregisterAssembly] Commands to remove: {string.Join(", ", commandsToRemove)}");
+
+    foreach (var commandName in commandsToRemove) {
+      int before = Commands[commandName].Count;
+      Commands[commandName].RemoveAll(cmd => cmd.Method.DeclaringType?.Assembly == asm);
+      int after = Commands.ContainsKey(commandName) ? Commands[commandName].Count : 0;
+      Console.WriteLine($"[UnregisterAssembly] Removed {before - after} commands from '{commandName}'");
+      if (Commands[commandName].Count == 0) {
+        Commands.Remove(commandName);
+        Console.WriteLine($"[UnregisterAssembly] Removed command key '{commandName}'");
       }
     }
 
-    foreach (var key in toRemove) {
-      Commands.Remove(key);
+    foreach (var group in CommandCategories.Keys.ToList()) {
+      int before = CommandCategories[group].Count;
+      CommandCategories[group].RemoveAll(cmd => cmd.Method.DeclaringType?.Assembly == asm);
+      int after = CommandCategories.ContainsKey(group) ? CommandCategories[group].Count : 0;
+      if (before != after)
+        Console.WriteLine($"[UnregisterAssembly] Removed {before - after} commands from group '{group}'");
+      if (CommandCategories[group].Count == 0) {
+        CommandCategories.Remove(group);
+        Console.WriteLine($"[UnregisterAssembly] Removed empty group '{group}'");
+      }
     }
 
-    // Limpar grupos vazios
-    var emptyGroups = CommandCategories.Where(g => g.Value.Count == 0).Select(g => g.Key).ToList();
-    foreach (var group in emptyGroups) {
-      CommandCategories.Remove(group);
+    foreach (var group in CustomCommandCategories.Keys.ToList()) {
+      int before = CustomCommandCategories[group].Count;
+      CustomCommandCategories[group].RemoveAll(cmd => cmd.Method.DeclaringType?.Assembly == asm);
+      int after = CustomCommandCategories.ContainsKey(group) ? CustomCommandCategories[group].Count : 0;
+      if (before != after)
+        Console.WriteLine($"[UnregisterAssembly] Removed {before - after} custom commands from group '{group}'");
+      if (CustomCommandCategories[group].Count == 0) {
+        CustomCommandCategories.Remove(group);
+        Console.WriteLine($"[UnregisterAssembly] Removed empty custom group '{group}'");
+      }
     }
   }
 
@@ -182,7 +209,7 @@ public static class CommandHandler {
         }
       }
 
-      return CommandExecutor.Enqueue(() => {
+      return ActionExecutor.Enqueue(() => {
         try {
           // Permite chamar métodos de outros assemblies
           var result = def.Method.Invoke(def.TargetInstance, parsedArgs);

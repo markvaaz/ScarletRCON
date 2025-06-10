@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace ScarletRCON;
 
-public static class CommandExecutor {
+public static class ActionExecutor {
   public static int Count {
     get {
       lock (_queue) return _queue.Count;

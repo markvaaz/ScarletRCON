@@ -26,6 +26,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="ScarletCore">
+      <HintPath>libs\ScarletCore.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="contentFiles/cs/any/RconCommandRegistrar.cs" />
   </ItemGroup>
 

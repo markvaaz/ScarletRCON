@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
+#nullable enable
+
 namespace ScarletRCON.Shared;
 
 [AttributeUsage(AttributeTargets.Class)]
@@ -78,13 +80,15 @@ public static class RconCommandRegistrar
     registerMethod.Invoke(null, [commandsToRegister]);
   }
 
-  public static void UnregisterAssembly()
+  public static void UnregisterAssembly(Assembly? assembly = null)
   {
     if (!IsScarletRconAvailable())
       return;
 
+    assembly ??= Assembly.GetCallingAssembly();
+
     var commandHandlerType = Type.GetType("ScarletRCON.CommandSystem.CommandHandler, ScarletRCON");
-    var unregisterMethod = commandHandlerType.GetMethod(
+    var unregisterMethod = commandHandlerType?.GetMethod(
         "UnregisterAssembly",
         BindingFlags.Public | BindingFlags.Static
     );
@@ -95,6 +99,6 @@ public static class RconCommandRegistrar
     if (unregisterMethod == null)
       throw new InvalidOperationException("ScarletRCON.CommandSystem.CommandHandler.UnregisterAssembly not found.");
 
-    unregisterMethod.Invoke(null, [Assembly.GetCallingAssembly()]);
+    unregisterMethod.Invoke(null, [assembly]);
   }
 }

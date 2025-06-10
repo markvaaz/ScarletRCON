@@ -1,6 +1,5 @@
 using ScarletRCON.CommandSystem;
-using ScarletRCON.Services;
-using ScarletRCON.Systems;
+using ScarletCore.Services;
 using Unity.Mathematics;
 
 namespace ScarletRCON.Commands;
@@ -13,7 +12,7 @@ public static class TeleportCommand {
       return $"Player '{playerName}' was not found or is not connected.";
     }
 
-    var position = player.CharacterEntity.GetPosition();
+    var position = player.CharacterEntity.Position();
 
     return $"- {player.Name}: ({position.x} {position.y} {position.z})\n";
   }
@@ -24,7 +23,7 @@ public static class TeleportCommand {
       return $"Player '{playerName}' was not found or is not connected.";
     }
 
-    TeleportSystem.TeleportToPosition(player.CharacterEntity, new float3(x, y, z));
+    TeleportService.TeleportToPosition(player.CharacterEntity, new float3(x, y, z));
 
     return $"Teleported {player.Name} to ({x}, {y}, {z})";
   }
@@ -40,7 +39,7 @@ public static class TeleportCommand {
       return $"Player '{targetPlayerName}' was not found or is not connected.";
     }
 
-    TeleportSystem.TeleportToEntity(player.CharacterEntity, target.CharacterEntity);
+    TeleportService.TeleportToEntity(player.CharacterEntity, target.CharacterEntity);
 
     return $"Teleported {player.Name} to {target.Name}'s position.";
   }
@@ -50,7 +49,7 @@ public static class TeleportCommand {
     foreach (var player in PlayerService.AllPlayers) {
       if (!player.IsOnline) continue;
 
-      TeleportSystem.TeleportToPosition(player.CharacterEntity, new float3(x, y, z));
+      TeleportService.TeleportToPosition(player.CharacterEntity, new float3(x, y, z));
     }
 
     return $"Teleported all players to ({x}, {y}, {z})";
@@ -63,12 +62,12 @@ public static class TeleportCommand {
       return $"Player '{playerName}' was not found or is not connected.";
     }
 
-    var position = targetPlayer.CharacterEntity.GetPosition();
+    var position = targetPlayer.CharacterEntity.Position();
 
     foreach (var player in PlayerService.AllPlayers) {
       if (!player.IsOnline) continue;
 
-      TeleportSystem.TeleportToEntity(player.CharacterEntity, targetPlayer.CharacterEntity);
+      TeleportService.TeleportToEntity(player.CharacterEntity, targetPlayer.CharacterEntity);
     }
 
     return $"Teleported all players to ({position.x}, {position.y}, {position.z})";

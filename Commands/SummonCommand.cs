@@ -1,26 +1,38 @@
 using ScarletRCON.CommandSystem;
-using ScarletRCON.Services;
+using ScarletCore.Services;
 using Stunlock.Core;
-using ScarletRCON.Systems;
 using Unity.Mathematics;
+using ProjectM;
 
 namespace ScarletRCON.Commands;
 
 [RconCommandCategory("Summon")]
 public static class SummonCommand {
   [RconCommand("summon", "Summon an entity at specific coordinates.")]
-  public static string Summon(string prefabGUID, float x, float y, float z, int quantity, int lifeTime) {
+  public static string Summon(string prefabGUID, float x, float y, float z, int quantity, int lifeTime, bool disableWhenNoPlayersInRange) {
     if (!PrefabGUID.TryParse(prefabGUID, out var guid)) {
       return "Invalid Prefab GUID.";
     }
 
-    EntitySpawnerSystem.Spawn(guid, new float3(x, y, z), count: quantity, lifeTime: lifeTime);
+    var entities = UnitSpawnerService.ImmediateSpawn(guid, new(x, y, z), count: quantity, lifeTime: lifeTime);
+
+    if (disableWhenNoPlayersInRange) {
+      foreach (var entity in entities) {
+        if (entity.Has<DisableWhenNoPlayersInRange>()) {
+          entity.Remove<DisableWhenNoPlayersInRange>();
+        }
+
+        if (entity.Has<DisableWhenNoPlayersInRangeOfChunk>()) {
+          entity.Remove<DisableWhenNoPlayersInRangeOfChunk>();
+        }
+      }
+    }
 
     return $"Summoned {guid.GuidHash} at ({x}, {y}, {z}).";
   }
 
   [RconCommand("summon", "Summon an entity at a connected player's location.")]
-  public static unsafe string Summon(string prefabGUID, string playerName, int quantity, int lifeTime) {
+  public static unsafe string Summon(string prefabGUID, string playerName, int quantity, int lifeTime, bool disableWhenNoPlayersInRange) {
     if (!PrefabGUID.TryParse(prefabGUID, out var guid)) {
       return "Invalid Prefab GUID.";
     }
@@ -29,7 +41,19 @@ public static class SummonCommand {
       return $"Player '{playerName}' was not found or is not connected.";
     }
 
-    EntitySpawnerSystem.Spawn(guid, player.CharacterEntity.GetPosition(), count: quantity, lifeTime: lifeTime);
+    var entities = UnitSpawnerService.ImmediateSpawn(guid, player.CharacterEntity.Position(), count: quantity, lifeTime: lifeTime);
+
+    if (disableWhenNoPlayersInRange) {
+      foreach (var entity in entities) {
+        if (entity.Has<DisableWhenNoPlayersInRange>()) {
+          entity.Remove<DisableWhenNoPlayersInRange>();
+        }
+
+        if (entity.Has<DisableWhenNoPlayersInRangeOfChunk>()) {
+          entity.Remove<DisableWhenNoPlayersInRangeOfChunk>();
+        }
+      }
+    }
 
     return $"Summoned {guid.GuidHash} at {playerName}'s location.";
   }

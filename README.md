@@ -73,4 +73,8 @@ Make sure BepInEx is installed and loaded **before** installing ScarletRCON.
 
 3. Start or restart your server.
 
-## Join the [modding community on Discord](https://discord.com/invite/QG2FmueAG9).
+## Credits
+- @helskog for the reveal map command.
+- @sirsaia for the teleport stuff.
+
+## Join the [modding community on Discord](https://vrisingmods.com/discord).
