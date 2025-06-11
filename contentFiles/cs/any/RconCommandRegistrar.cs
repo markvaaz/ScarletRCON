@@ -34,12 +34,10 @@ public static class RconCommandRegistrar
   public static void RegisterAll()
   {
     if (!IsScarletRconAvailable())
-      return;
+      return; Assembly assembly = Assembly.GetCallingAssembly();
+    var prefix = $"{assembly.GetName().Name?.ToLowerInvariant()}.";
 
-    Assembly assembly = Assembly.GetCallingAssembly();
-    var prefix = $"{assembly.GetName().Name.ToLowerInvariant()}.";
-
-    var commandsToRegister = new List<(string, string, MethodInfo, string, string, string)>();
+    var commandsToRegister = new List<(string, string, MethodInfo, string, string?, string)>();
 
     foreach (var type in assembly.GetTypes())
     {
@@ -51,7 +49,7 @@ public static class RconCommandRegistrar
         var attr = method.GetCustomAttribute<RconCommandAttribute>();
         if (attr == null) continue;
 
-        string usage = attr.Usage;
+        string? usage = attr.Usage;
         if (string.IsNullOrWhiteSpace(usage))
         {
           var parameters = method.GetParameters();
@@ -61,12 +59,11 @@ public static class RconCommandRegistrar
                   p.ParameterType == typeof(List<string>) ? "<...text>" : $"<{p.Name}>"));
         }
 
-        commandsToRegister.Add((group, prefix, method, attr.Name, attr.Description, usage));
+        commandsToRegister.Add((group, prefix, method, attr.Name, attr.Description, usage ?? ""));
       }
     }
-
     var commandHandlerType = Type.GetType("ScarletRCON.CommandSystem.CommandHandler, ScarletRCON");
-    var registerMethod = commandHandlerType.GetMethod(
+    var registerMethod = commandHandlerType?.GetMethod(
         "RegisterExternalCommandsBatch",
         BindingFlags.Public | BindingFlags.Static
     );
