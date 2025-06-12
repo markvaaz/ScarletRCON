@@ -1,3 +1,7 @@
+## Update 1.2.1
+
+- Fix RegisterExternalCommandsBatch ambiguity with automatic async detection
+
 ## Update 1.2.0
 
 - Added support for asynchronous commands in CommandHandler.
