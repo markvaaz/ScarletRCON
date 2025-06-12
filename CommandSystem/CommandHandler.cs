@@ -99,13 +99,28 @@ public static class CommandHandler {
 
     SortCommands();
   }  /// <summary>
-     /// Registers a batch of external commands with their metadata.
-     /// These commands are added to custom command categories.
+     /// Determines if a method is async by checking its return type.
      /// </summary>
-     /// <param name="commands">Collection of command metadata tuples</param>
-  public static void RegisterExternalCommandsBatch(IEnumerable<(string Group, string Prefix, MethodInfo Method, string Name, string Description, string Usage, bool IsAsync)> commands) {
-    foreach (var (group, prefix, method, name, description, usage, isAsync) in commands) {
+     /// <param name="method">The method to check</param>
+     /// <returns>True if the method is async, false otherwise</returns>
+  private static bool IsAsyncMethod(MethodInfo method) {
+    var returnType = method.ReturnType;
+    return returnType == typeof(Task) ||
+           (returnType.IsGenericType && returnType.GetGenericTypeDefinition() == typeof(Task<string>));
+  }
+
+  /// <summary>
+  /// Registers a batch of external commands with their metadata.
+  /// Automatically detects if methods are async based on their return type.
+  /// These commands are added to custom command categories.
+  /// </summary>
+  /// <param name="commands">Collection of command metadata tuples</param>
+  public static void RegisterExternalCommandsBatch(IEnumerable<(string Group, string Prefix, MethodInfo Method, string Name, string Description, string Usage)> commands) {
+    foreach (var (group, prefix, method, name, description, usage) in commands) {
       string fullCommandName = string.Join(".", $"{prefix}{name.ToLowerInvariant()}".Split(" "));
+
+      // Automatically detect if the method is async
+      bool isAsync = IsAsyncMethod(method);
 
       var def = new RconCommandDefinition(fullCommandName, description, usage, method, null, isAsync);
 
@@ -126,25 +141,14 @@ public static class CommandHandler {
   }
 
   /// <summary>
-  /// Registers a batch of external commands with their metadata (backward compatibility).
-  /// These commands are added to custom command categories.
-  /// </summary>
-  /// <param name="commands">Collection of command metadata tuples</param>
-  public static void RegisterExternalCommandsBatch(IEnumerable<(string Group, string Prefix, MethodInfo Method, string Name, string Description, string Usage)> commands) {
-    // Convert old format to new format with isAsync = false for backward compatibility
-    var newCommands = commands.Select(cmd => (cmd.Group, cmd.Prefix, cmd.Method, cmd.Name, cmd.Description, cmd.Usage, false));
-    RegisterExternalCommandsBatch(newCommands);
-  }
-
-  /// <summary>
   /// Sorts all commands alphabetically by name and rebuilds the command dictionary.
   /// </summary>
   public static void SortCommands() {
     Commands = Commands.Values
-        .SelectMany(c => c)
-        .OrderBy(c => c.Name)
-        .GroupBy(c => c.Name)
-        .ToDictionary(g => g.Key, g => g.ToList());
+      .SelectMany(c => c)
+      .OrderBy(c => c.Name)
+      .GroupBy(c => c.Name)
+      .ToDictionary(g => g.Key, g => g.ToList());
   }
 
   /// <summary>
