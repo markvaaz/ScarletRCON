@@ -30,15 +30,18 @@ public static class SummonCommand {
 
     return $"Summoned {guid.GuidHash} at ({x}, {y}, {z}).";
   }
-
-  [RconCommand("summon", "Summon an entity at a connected player's location.")]
+  [RconCommand("summon", "Summon an entity at a player's location.")]
   public static unsafe string Summon(string prefabGUID, string playerName, int quantity, int lifeTime, bool disableWhenNoPlayersInRange) {
     if (!PrefabGUID.TryParse(prefabGUID, out var guid)) {
       return "Invalid Prefab GUID.";
     }
 
-    if (!PlayerService.TryGetByName(playerName, out var player) || !player.IsOnline) {
-      return $"Player '{playerName}' was not found or is not connected.";
+    if (!PlayerService.TryGetByName(playerName, out var player)) {
+      return $"Player '{playerName}' was not found.";
+    }
+
+    if (!player.IsOnline) {
+      return $"Player '{playerName}' is not currently online.";
     }
 
     var entities = UnitSpawnerService.ImmediateSpawn(guid, player.CharacterEntity.Position(), count: quantity, lifeTime: lifeTime);

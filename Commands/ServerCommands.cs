@@ -7,6 +7,7 @@ using System.Reflection;
 using Unity.Entities;
 using Unity.Collections;
 using ScarletCore.Systems;
+using System.Threading.Tasks;
 
 namespace ScarletRCON.Commands;
 
@@ -112,36 +113,35 @@ public static class ServerCommands {
     return $"Setting '{settingsPath}' is '{current}'";
   }
 
-
-  [RconCommand("listadmins", "List all connected admins.")]
+  [RconCommand("listadmins", "List all admins.")]
   public static string ListAdmins() {
     var admins = PlayerService.GetAdmins();
     string result = "";
     int count = 0;
 
     foreach (var player in admins) {
-      if (!player.IsOnline) continue;
       count++;
-      result += $"- \x1b[97m{player.Name}\u001b[0m \u001b[90m({player.PlatformId})\u001b[0m\n";
+      string status = player.IsOnline ? "\u001b[32m●\u001b[0m" : "\u001b[31m●\u001b[0m";
+      result += $"- \x1b[97m{player.Name}\u001b[0m \u001b[90m({player.PlatformId})\u001b[0m {status}\n";
     }
 
-    result += $"Total connected admins: {count}";
+    result += $"Total admins: {count}";
 
     return result;
   }
 
-  [RconCommand("listplayers", "List all connected players.")]
+  [RconCommand("listplayers", "List all players.")]
   public static string ListAllPlayers() {
     string result = "";
     int count = 0;
 
     foreach (var player in PlayerService.AllPlayers) {
-      if (!player.IsOnline) continue;
       count++;
-      result += $"- \x1b[97m{player.Name}\u001b[0m \u001b[90m({player.PlatformId})\u001b[0m\n";
+      string status = player.IsOnline ? "\u001b[32m●\u001b[0m" : "\u001b[31m●\u001b[0m";
+      result += $"- \x1b[97m{player.Name}\u001b[0m \u001b[90m({player.PlatformId})\u001b[0m {status}\n";
     }
 
-    result += $"Total connected players: {count}";
+    result += $"Total players: {count}";
 
     return result;
   }
@@ -153,18 +153,15 @@ public static class ServerCommands {
     string gray = "\u001b[90m";
     string reset = "\x1b[0m";
 
-    var clans = ClanService.GetClanEntities();
+    var clans = ClanService.GetClanTeams();
 
-    if (clans.Length == 0) return "No clans found.";
+    if (clans.Count == 0) return "No clans found.";
 
     foreach (var clan in clans) {
-
-      var clanName = clan.Read<ClanTeam>().Name.ToString();
+      var clanName = clan.Name.ToString();
 
       result += $"-{white} Clan Name{reset}: {gray}{clanName}{reset}\n";
     }
-
-    clans.Dispose();
 
     return result;
   }

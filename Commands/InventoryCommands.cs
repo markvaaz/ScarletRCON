@@ -6,10 +6,14 @@ namespace ScarletRCON.Commands;
 
 [RconCommandCategory("Inventory Management")]
 public static class InventoryCommands {
-  [RconCommand("giveitem", "Give an item to a connected player.")]
+  [RconCommand("giveitem", "Give an item to a player.")]
   public static string Give(string playerName, string prefabGUID, int amount) {
-    if (!PlayerService.TryGetByName(playerName, out var player) || !player.IsOnline) {
-      return $"Player '{playerName}' was not found or is not connected.";
+    if (!PlayerService.TryGetByName(playerName, out var player)) {
+      return $"Player '{playerName}' was not found.";
+    }
+
+    if (!player.IsOnline) {
+      return $"Player '{playerName}' is not currently online.";
     }
 
     if (!PrefabGUID.TryParse(prefabGUID, out var guid)) {
@@ -25,7 +29,7 @@ public static class InventoryCommands {
     return $"Given {amount} {guid.GuidHash} to {playerName}.";
   }
 
-  [RconCommand("giveitemall", "Give an item to all connected players.")]
+  [RconCommand("giveitemall", "Give an item to all online players.")]
   public static string GiveAll(int prefabGUID, int amount) {
     if (!PrefabGUID.TryParse(prefabGUID.ToString(), out var guid)) {
       return "Invalid Prefab GUID.";
@@ -38,11 +42,14 @@ public static class InventoryCommands {
 
     return $"Given {amount} {guid} to all players.";
   }
-
-  [RconCommand("removeitem", "Remove an item from a connected player's inventory.")]
+  [RconCommand("removeitem", "Remove an item from a player's inventory.")]
   public static string RemoveItem(string playerName, string prefabGUID, int amount) {
-    if (!PlayerService.TryGetByName(playerName, out var player) || !player.IsOnline) {
-      return $"Player '{playerName}' was not found or is not connected.";
+    if (!PlayerService.TryGetByName(playerName, out var player)) {
+      return $"Player '{playerName}' was not found.";
+    }
+
+    if (!player.IsOnline) {
+      return $"Player '{playerName}' is not currently online.";
     }
 
     if (!PrefabGUID.TryParse(prefabGUID, out var guid)) {
@@ -58,7 +65,7 @@ public static class InventoryCommands {
     return $"Removed {amount} {guid.GuidHash} from {playerName}'s inventory.";
   }
 
-  [RconCommand("removeitemall", "Remove an item from all connected players' inventories.")]
+  [RconCommand("removeitemall", "Remove an item from all online players' inventories.")]
   public static string RemoveItemAll(int prefabGUID, int amount) {
     if (!PrefabGUID.TryParse(prefabGUID.ToString(), out var guid)) {
       return "Invalid Prefab GUID.";

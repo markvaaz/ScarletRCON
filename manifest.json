@@ -1,9 +1,10 @@
 {
   "name": "ScarletRCON",
-  "version_number": "1.1.7",
+  "version_number": "1.2.0",
   "website_url": "https://github.com/markvaaz/ScarletRCON",
   "description": "Enhance server administration with powerful, ready-to-use RCON commands that go far beyond the default capabilities. Are you a Modder? Easily build and register your own custom RCON commands without making ScarletRCON a direct dependency.",
   "dependencies": [
-    "BepInEx-BepInExPack_V_Rising-1.733.2"
+    "BepInEx-BepInExPack_V_Rising-1.733.2",
+    "ScarletMods-ScarletCore-1.0.0"
   ]
 }

@@ -13,11 +13,10 @@ namespace ScarletRCON.Commands;
 public static class PlayerCommand {
   private static PrefabGUID FreezeBuffGUID = new(-1527408583);
   private static PrefabGUID WoundedBuffGUID = new(-1992158531);
-
-  [RconCommand("playerinfo", "Show info about a connected player.")]
+  [RconCommand("playerinfo", "Show info about a player.")]
   public static string PlayerInfo(string playerName) {
     if (!PlayerService.TryGetByName(playerName, out var player)) {
-      return $"Player '{playerName}' was not found or is not connected.";
+      return $"Player '{playerName}' was not found.";
     }
 
     var result = $"- Character Name: {player.Name}\n";
@@ -32,11 +31,14 @@ public static class PlayerCommand {
 
     return result;
   }
-
-  [RconCommand("kick", "Kick a connected player.")]
+  [RconCommand("kick", "Kick a player.")]
   public static string Kick(string playerName) {
     if (!PlayerService.TryGetByName(playerName, out var player)) {
-      return $"Player '{playerName}' was not found or is not connected.";
+      return $"Player '{playerName}' was not found.";
+    }
+
+    if (!player.IsOnline) {
+      return $"Player '{playerName}' is not currently online.";
     }
 
     MessageService.SendAll($"{player.Name} got ~kicked~ by an admin.");
@@ -55,11 +57,10 @@ public static class PlayerCommand {
 
     return $"Banned {playerId} by ID.";
   }
-
-  [RconCommand("ban", "Ban a connected player by name.")]
+  [RconCommand("ban", "Ban a player by name.")]
   public static string BanByName(string playerName) {
     if (!PlayerService.TryGetByName(playerName, out var player)) {
-      return $"Player '{playerName}' was not found or is not connected.\nTry using the ID instead.";
+      return $"Player '{playerName}' was not found.\nTry using the ID instead.";
     }
 
     if (KickBanService.IsBanned(player.PlatformId)) {
@@ -95,10 +96,10 @@ public static class PlayerCommand {
     return $"Added {playerId} as admin.";
   }
 
-  [RconCommand("addadmin", "Add a connected player as admin.")]
+  [RconCommand("addadmin", "Add a player as admin.")]
   public static string AddAdmin(string playerName) {
     if (!PlayerService.TryGetByName(playerName, out var player)) {
-      return $"Player '{playerName}' was not found or is not connected.";
+      return $"Player '{playerName}' was not found.";
     }
 
     if (player.IsAdmin) {
@@ -121,10 +122,10 @@ public static class PlayerCommand {
     return $"Removed {playerId} as admin.";
   }
 
-  [RconCommand("removeadmin", "Remove a connected player as admin.")]
+  [RconCommand("removeadmin", "Remove a player as admin.")]
   public static string RemoveAdmin(string playerName) {
     if (!PlayerService.TryGetByName(playerName, out var player)) {
-      return $"Player '{playerName}' was not found or is not connected.";
+      return $"Player '{playerName}' was not found.";
     }
 
     if (!player.IsAdmin) {
@@ -136,10 +137,14 @@ public static class PlayerCommand {
     return $"Removed {playerName} as admin.";
   }
 
-  [RconCommand("buff", "Apply a buff to a connected player.")]
+  [RconCommand("buff", "Apply a buff to a player.")]
   public static string BuffPlayer(string playerName, string prefabGUID, int duration) {
     if (!PlayerService.TryGetByName(playerName, out var player)) {
-      return $"Player '{playerName}' was not found or is not connected.";
+      return $"Player '{playerName}' was not found.";
+    }
+
+    if (!player.IsOnline) {
+      return $"Player '{playerName}' is not currently online.";
     }
 
     if (!PrefabGUID.TryParse(prefabGUID, out var guid)) {
@@ -157,10 +162,14 @@ public static class PlayerCommand {
     return $"Applied buff {prefabGUID} to {playerName} for {duration} seconds.";
   }
 
-  [RconCommand("debuff", "Remove a buff from a connected player.")]
+  [RconCommand("debuff", "Remove a buff from a player.")]
   public static string RemoveBuff(string playerName, string prefabGUID) {
     if (!PlayerService.TryGetByName(playerName, out var player)) {
-      return $"Player '{playerName}' was not found or is not connected.";
+      return $"Player '{playerName}' was not found.";
+    }
+
+    if (!player.IsOnline) {
+      return $"Player '{playerName}' is not currently online.";
     }
 
     if (!PrefabGUID.TryParse(prefabGUID, out var guid)) {
@@ -176,10 +185,14 @@ public static class PlayerCommand {
     return $"Removed buff {prefabGUID} from {playerName}.";
   }
 
-  [RconCommand("freeze", "Freeze a connected player for x seconds.")]
+  [RconCommand("freeze", "Freeze a player for x seconds.")]
   public static string Freeze(string playerName, int duration) {
     if (!PlayerService.TryGetByName(playerName, out var player)) {
-      return $"Player '{playerName}' was not found or is not connected.";
+      return $"Player '{playerName}' was not found.";
+    }
+
+    if (!player.IsOnline) {
+      return $"Player '{playerName}' is not currently online.";
     }
 
     if (BuffService.HasBuff(player.CharacterEntity, FreezeBuffGUID)) {
@@ -195,10 +208,14 @@ public static class PlayerCommand {
     return $"Frozen {playerName}.";
   }
 
-  [RconCommand("unfreeze", "Unfreeze a connected player.")]
+  [RconCommand("unfreeze", "Unfreeze a player.")]
   public static string Unfreeze(string playerName) {
     if (!PlayerService.TryGetByName(playerName, out var player)) {
-      return $"Player '{playerName}' was not found or is not connected.";
+      return $"Player '{playerName}' was not found.";
+    }
+
+    if (!player.IsOnline) {
+      return $"Player '{playerName}' is not currently online.";
     }
 
     if (!BuffService.HasBuff(player.CharacterEntity, FreezeBuffGUID)) {
@@ -212,10 +229,14 @@ public static class PlayerCommand {
     return $"Unfroze {playerName}.";
   }
 
-  [RconCommand("heal", "Full heal a connected player.", "<playerName>")]
+  [RconCommand("heal", "Full heal a player.", "<playerName>")]
   public static string Heal(string playerName) {
-    if (!PlayerService.TryGetByName(playerName, out var player) || !player.IsOnline) {
-      return $"Player '{playerName}' was not found or is not connected.";
+    if (!PlayerService.TryGetByName(playerName, out var player)) {
+      return $"Player '{playerName}' was not found.";
+    }
+
+    if (!player.IsOnline) {
+      return $"Player '{playerName}' is not currently online.";
     }
 
     var character = player.CharacterEntity;
@@ -232,38 +253,129 @@ public static class PlayerCommand {
     return $"Healed {player.Name}.";
   }
 
-  [RconCommand("wound", "Wound a connected player.", "<playerName>")]
+  [RconCommand("healradius", "Full heal all players within a radius of specific coordinates.", "<x> <z> <radius>")]
+  public static string HealRadius(float x, float z, float radius) {
+    if (radius <= 0) {
+      return "Radius must be greater than 0.";
+    }
+
+    foreach (var player in PlayerService.AllPlayers) {
+      var character = player.CharacterEntity;
+      var position = player.CharacterEntity.Position();
+
+      var distance = math.distance(new float3(x, 0, z), new float3(position.x, 0, position.z));
+
+      if (distance > radius) continue;
+
+      var health = character.Read<Health>();
+
+      health.Value = health.MaxHealth;
+      health.MaxRecoveryHealth = health.MaxHealth;
+
+      character.Write(health);
+
+      MessageService.Send(player.User, "You have been ~healed~ by an admin!");
+    }
+
+    return $"Healed all players within radius {radius} around ({x}, {z}).";
+  }
+
+  [RconCommand("healradius", "Full heal all players within a player's radius.", "<playerName> <radius>")]
+  public static string HealRadius(string playerName, float radius) {
+    if (!PlayerService.TryGetByName(playerName, out var targetPlayer)) {
+      return $"Player '{playerName}' was not found.";
+    }
+
+    if (!targetPlayer.IsOnline) {
+      return $"Player '{playerName}' is not currently online.";
+    }
+
+    if (radius <= 0) {
+      return "Radius must be greater than 0.";
+    }
+
+    var targetPos = targetPlayer.CharacterEntity.Position();
+
+    foreach (var player in PlayerService.AllPlayers) {
+      var character = player.CharacterEntity;
+      var position = player.CharacterEntity.Position();
+
+      var distance = math.distance(new float3(targetPos.x, 0, targetPos.z), new float3(position.x, 0, position.z));
+
+      if (distance > radius) continue;
+
+      var health = character.Read<Health>();
+
+      health.Value = health.MaxHealth;
+      health.MaxRecoveryHealth = health.MaxHealth;
+
+      character.Write(health);
+
+      MessageService.Send(player.User, "You have been ~healed~ by an admin!");
+    }
+
+    return $"Healed all players within radius {radius} around {playerName}.";
+  }
+
+  [RconCommand("healall", "Full heal all players.")]
+  public static string HealAll() {
+    foreach (var player in PlayerService.AllPlayers) {
+      var character = player.CharacterEntity;
+
+      var health = character.Read<Health>();
+
+      health.Value = health.MaxHealth;
+      health.MaxRecoveryHealth = health.MaxHealth;
+
+      character.Write(health);
+
+      MessageService.Send(player.User, "You have been ~healed~ by an admin!");
+    }
+
+    return "Healed all players.";
+  }
+
+  [RconCommand("wound", "Wound a player.", "<playerName>")]
   public static string Wound(string playerName) {
-    if (!PlayerService.TryGetByName(playerName, out var player) || !player.IsOnline) {
-      return $"Player '{playerName}' was not found or is not connected.";
+    if (!PlayerService.TryGetByName(playerName, out var player)) {
+      return $"Player '{playerName}' was not found.";
+    }
+
+    if (!player.IsOnline) {
+      return $"Player '{playerName}' is not currently online.";
     }
 
     if (!BuffService.TryApplyBuff(player.CharacterEntity, WoundedBuffGUID)) {
       return $"Failed to wound {playerName}.";
     }
-
     MessageService.Send(player.User, "You have been ~wounded~ by an admin!");
 
-    return $"Healed {player.Name}.";
+    return $"Wounded {player.Name}.";
   }
 
-  [RconCommand("kill", "Kill a connected player.", "<playerName>")]
+  [RconCommand("kill", "Kill a player.", "<playerName>")]
   public static string Kill(string playerName) {
-    if (!PlayerService.TryGetByName(playerName, out var player) || !player.IsOnline) {
-      return $"Player '{playerName}' was not found or is not connected.";
+    if (!PlayerService.TryGetByName(playerName, out var player)) {
+      return $"Player '{playerName}' was not found.";
     }
 
-    StatChangeUtility.KillEntity(GameSystems.EntityManager, player.CharacterEntity, player.CharacterEntity, GameSystems.ServerGameManager.ServerTime, StatChangeReason.Default, true);
+    if (!player.IsOnline) {
+      return $"Player '{playerName}' is not currently online.";
+    }
 
-    MessageService.Send(player.User, "You have been ~killed~ by an admin!");
+    StatChangeUtility.KillEntity(GameSystems.EntityManager, player.CharacterEntity, player.CharacterEntity, GameSystems.ServerGameManager.ServerTime, StatChangeReason.Default, true); MessageService.Send(player.User, "You have been ~killed~ by an admin!");
 
-    return $"Healed {player.Name}.";
+    return $"Killed {player.Name}.";
   }
 
-  [RconCommand("revive", "Revive a connected player.", "<playerName>")]
+  [RconCommand("revive", "Revive a player.", "<playerName>")]
   public static string Revive(string playerName) {
-    if (!PlayerService.TryGetByName(playerName, out var player) || !player.IsOnline) {
-      return $"Player '{playerName}' was not found or is not connected.";
+    if (!PlayerService.TryGetByName(playerName, out var player)) {
+      return $"Player '{playerName}' was not found.";
+    }
+
+    if (!player.IsOnline) {
+      return $"Player '{playerName}' is not currently online.";
     }
 
     var character = player.CharacterEntity;
@@ -292,7 +404,7 @@ public static class PlayerCommand {
     return $"Revived {player.Name}.";
   }
 
-  [RconCommand("reviveall", "Revive all connected players.")]
+  [RconCommand("reviveall", "Revive all players.")]
   public static string ReviveAll() {
     foreach (var player in PlayerService.AllPlayers) {
       var character = player.CharacterEntity;
@@ -322,7 +434,7 @@ public static class PlayerCommand {
     return "Revived all players.";
   }
 
-  [RconCommand("reviveradius", "Revive all connected players within a radius.")]
+  [RconCommand("reviveradius", "Revive all players within a radius.")]
   public static string ReviveRadius(int x, int y, int z, int radius) {
     foreach (var player in PlayerService.AllPlayers) {
       var character = player.CharacterEntity;
@@ -357,10 +469,14 @@ public static class PlayerCommand {
     return "Revived all players.";
   }
 
-  [RconCommand("reviveradius", "Revive all connected players within a player's radius.")]
+  [RconCommand("reviveradius", "Revive all players within a player's radius.")]
   public static string ReviveRadius(string playerName, int radius) {
-    if (!PlayerService.TryGetByName(playerName, out var targetPlayer) || !targetPlayer.IsOnline) {
-      return $"Player '{playerName}' was not found or is not connected.";
+    if (!PlayerService.TryGetByName(playerName, out var targetPlayer)) {
+      return $"Player '{playerName}' was not found.";
+    }
+
+    if (!targetPlayer.IsOnline) {
+      return $"Player '{playerName}' is not currently online.";
     }
 
     var targetPos = targetPlayer.CharacterEntity.Position();
@@ -398,20 +514,14 @@ public static class PlayerCommand {
     return "Revived all players.";
   }
 
-  /*
-
-
-
-    MAP REVEAL COMMANDS
-
-
-
-  */
-
-  [RconCommand("revealmap", "Reveal the map for a connected player.")]
+  [RconCommand("revealmap", "Reveal the map for a player.")]
   public static string RevealMap(string playerName) {
-    if (!PlayerService.TryGetByName(playerName, out var player) || !player.IsOnline) {
-      return $"Player '{playerName}' was not found or is not connected.";
+    if (!PlayerService.TryGetByName(playerName, out var player)) {
+      return $"Player '{playerName}' was not found.";
+    }
+
+    if (!player.IsOnline) {
+      return $"Player '{playerName}' is not currently online.";
     }
 
     RevealMapService.RevealFullMap(player);
@@ -421,10 +531,14 @@ public static class PlayerCommand {
     return $"Revealed map for {player.Name}.";
   }
 
-  [RconCommand("revealmapradius", "Reveal the map within a radius of specific coordinates for a connected player.")]
+  [RconCommand("revealmapradius", "Reveal the map within a radius of specific coordinates for a player.")]
   public static string RevealMapRadius(string playerName, float x, float z, float radius) {
-    if (!PlayerService.TryGetByName(playerName, out var player) || !player.IsOnline) {
-      return $"Player '{playerName}' was not found or is not connected.";
+    if (!PlayerService.TryGetByName(playerName, out var player)) {
+      return $"Player '{playerName}' was not found.";
+    }
+
+    if (!player.IsOnline) {
+      return $"Player '{playerName}' is not currently online.";
     }
 
     if (radius <= 0) {
@@ -433,17 +547,27 @@ public static class PlayerCommand {
 
     RevealMapService.RevealMapRadius(player, new(x, 0, z), radius);
 
+    MessageService.Send(player.User, $"Your map has been partially ~revealed~ by an admin!");
+
     return $"Revealed map for {player.Name} within radius {radius} around ({x}, {z}).";
   }
 
   [RconCommand("revealmapradius", "Reveal the map within a radius around another player.")]
   public static string RevealMapRadius(string playerName, string targetPlayerName, float radius) {
-    if (!PlayerService.TryGetByName(playerName, out var player) || !player.IsOnline) {
-      return $"Player '{playerName}' was not found or is not connected.";
+    if (!PlayerService.TryGetByName(playerName, out var player)) {
+      return $"Player '{playerName}' was not found.";
     }
 
-    if (!PlayerService.TryGetByName(targetPlayerName, out var centerPlayer) || !centerPlayer.IsOnline) {
-      return $"Center player '{targetPlayerName}' was not found or is not connected.";
+    if (!player.IsOnline) {
+      return $"Player '{playerName}' is not currently online.";
+    }
+
+    if (!PlayerService.TryGetByName(targetPlayerName, out var centerPlayer)) {
+      return $"Center player '{targetPlayerName}' was not found.";
+    }
+
+    if (!centerPlayer.IsOnline) {
+      return $"Center player '{targetPlayerName}' is not currently online.";
     }
 
     if (radius <= 0) {
@@ -452,13 +576,53 @@ public static class PlayerCommand {
 
     RevealMapService.RevealMapRadius(player, centerPlayer.CharacterEntity.Position(), radius);
 
-    return $"Revealed map for {player.Name} within radius {radius} around {targetPlayerName}.";
+    MessageService.Send(player.User, $"Your map has been partially ~revealed~ by an admin!");
+
+    return $"Revealed map for {player.Name} within radius {radius} around {centerPlayer.Name}.";
   }
 
-  [RconCommand("hidemap", "Hide/obscure the map for a connected player.")]
+  [RconCommand("revealmaprect", "Reveal the map within a rectangle for a player.")]
+  public static string RevealMapRect(string playerName, float x, float z, float width, float height) {
+    if (!PlayerService.TryGetByName(playerName, out var player)) {
+      return $"Player '{playerName}' was not found.";
+    }
+
+    if (!player.IsOnline) {
+      return $"Player '{playerName}' is not currently online.";
+    }
+
+    if (width <= 0 || height <= 0) {
+      return "Width and height must be greater than 0.";
+    }
+
+    RevealMapService.RevealMapRectangle(player, new(x, 0, z), width, height);
+
+    MessageService.Send(player.User, $"Your map has been partially ~revealed~ by an admin!");
+
+    return $"Revealed map for {player.Name} within rectangle at ({x}, {z}) with width {width} and height {height}.";
+  }
+
+  [RconCommand("revealmapall", "Reveal the map for all players.")]
+  public static string RevealMapAll() {
+    foreach (var player in PlayerService.AllPlayers) {
+      if (!player.IsOnline) continue;
+
+      RevealMapService.RevealFullMap(player);
+
+      MessageService.Send(player.User, "Your map has been ~revealed~ by an admin!");
+    }
+
+    return "Revealed map for all online players.";
+  }
+
+  [RconCommand("hidemap", "Hide/obscure the map for a player.")]
   public static string HideMap(string playerName) {
-    if (!PlayerService.TryGetByName(playerName, out var player) || !player.IsOnline) {
-      return $"Player '{playerName}' was not found or is not connected.";
+    if (!PlayerService.TryGetByName(playerName, out var player)) {
+      return $"Player '{playerName}' was not found.";
+    }
+
+    if (!player.IsOnline) {
+      return $"Player '{playerName}' is not currently online.";
     }
 
     RevealMapService.HideFullMap(player);

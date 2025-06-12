@@ -7,7 +7,7 @@ namespace ScarletRCON.Commands;
 
 [RconCommandCategory("Messaging")]
 public static class MessagingCommands {
-  [RconCommand("announce", "Send a message to all connected players.", "<message>")]
+  [RconCommand("announce", "Send a message to all online players.", "<message>")]
   public static string Announce(List<string> args) {
     string message = string.Join(" ", args);
 
@@ -24,11 +24,14 @@ public static class MessagingCommands {
 
     return $"Sent announcement: {message}";
   }
-
-  [RconCommand("private", "Send a private message to a connected player.", "<playerName> <message>")]
+  [RconCommand("private", "Send a private message to a player.", "<playerName> <message>")]
   public static string PrivateMessage(string playerName, string message) {
-    if (!PlayerService.TryGetByName(playerName, out var player) || !player.IsOnline) {
-      return $"Player '{playerName}' was not found or is not connected.";
+    if (!PlayerService.TryGetByName(playerName, out var player)) {
+      return $"Player '{playerName}' was not found.";
+    }
+
+    if (!player.IsOnline) {
+      return $"Player '{playerName}' is not currently online.";
     }
 
     MessageService.Send(player.UserEntity.Read<User>(), message);
