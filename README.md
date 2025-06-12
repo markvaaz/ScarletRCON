@@ -26,6 +26,7 @@ Have ideas or feedback? [Leave your suggestion on GitHub](https://github.com/mar
 
 ## New Features
 
+- Added support for asynchronous commands in CommandHandler.
 - Added save command.
 - Added support for defining RCON commands without requiring ScarletRCON as a direct dependency.
 - Added command categories for better organization.
@@ -40,15 +41,6 @@ Have ideas or feedback? [Leave your suggestion on GitHub](https://github.com/mar
 
 ## For more information, please visit the [ScarletRCON Wiki on Thunderstore](https://thunderstore.io/c/v-rising/p/ScarletMods/ScarletRCON/wiki/).
 
-## Wiki Index
-
-- [All Commands](/c/v-rising/p/ScarletMods/ScarletRCON/wiki/3498-all-commands/)
-- [Custom Commands Guide](/c/v-rising/p/ScarletMods/ScarletRCON/wiki/3496-custom-commands-guide/)
-- [How to use RCON](/c/v-rising/p/ScarletMods/ScarletRCON/wiki/3499-how-to-use-rcon/)
-- [Integration Guide](/c/v-rising/p/ScarletMods/ScarletRCON/wiki/3497-integration-guide/)
-- [Scarlet RCON Client (Optional)](/c/v-rising/p/ScarletMods/ScarletRCON/wiki/3511-scarlet-rcon-client-optional/)
-
-
 ## Installation
 
 ### Requirements
@@ -56,6 +48,7 @@ Have ideas or feedback? [Leave your suggestion on GitHub](https://github.com/mar
 This mod requires the following dependencies:
 
 * **[BepInEx](https://wiki.vrisingmods.com/user/bepinex_install.html)**
+* **[ScarletCore](https://thunderstore.io/c/v-rising/p/ScarletMods/ScarletCore/)**
 
 Make sure BepInEx is installed and loaded **before** installing ScarletRCON.
 
@@ -71,10 +64,11 @@ Make sure BepInEx is installed and loaded **before** installing ScarletRCON.
 
    `BepInEx/plugins/ScarletRCON.dll`
 
-3. Start or restart your server.
+3. Ensure **ScarletCore** and is also installed in the `plugins` folder.
+4. Start or restart your server.
 
 ## Credits
-- @helskog for the reveal map command.
+- @helskog for comming up with the idea for the reveal map command.
 - @sirsaia for the teleport stuff.
 
 ## Join the [modding community on Discord](https://vrisingmods.com/discord).
