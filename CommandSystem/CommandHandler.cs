@@ -98,18 +98,16 @@ public static class CommandHandler {
     }
 
     SortCommands();
-  }
-
-  /// <summary>
-  /// Registers a batch of external commands with their metadata.
-  /// These commands are added to custom command categories.
-  /// </summary>
-  /// <param name="commands">Collection of command metadata tuples</param>
-  public static void RegisterExternalCommandsBatch(IEnumerable<(string Group, string Prefix, MethodInfo Method, string Name, string Description, string Usage)> commands) {
-    foreach (var (group, prefix, method, name, description, usage) in commands) {
+  }  /// <summary>
+     /// Registers a batch of external commands with their metadata.
+     /// These commands are added to custom command categories.
+     /// </summary>
+     /// <param name="commands">Collection of command metadata tuples</param>
+  public static void RegisterExternalCommandsBatch(IEnumerable<(string Group, string Prefix, MethodInfo Method, string Name, string Description, string Usage, bool IsAsync)> commands) {
+    foreach (var (group, prefix, method, name, description, usage, isAsync) in commands) {
       string fullCommandName = string.Join(".", $"{prefix}{name.ToLowerInvariant()}".Split(" "));
 
-      var def = new RconCommandDefinition(fullCommandName, description, usage, method, null, false);
+      var def = new RconCommandDefinition(fullCommandName, description, usage, method, null, isAsync);
 
       if (!Commands.ContainsKey(fullCommandName))
         Commands[fullCommandName] = [];
@@ -125,6 +123,17 @@ public static class CommandHandler {
     }
 
     SortCommands();
+  }
+
+  /// <summary>
+  /// Registers a batch of external commands with their metadata (backward compatibility).
+  /// These commands are added to custom command categories.
+  /// </summary>
+  /// <param name="commands">Collection of command metadata tuples</param>
+  public static void RegisterExternalCommandsBatch(IEnumerable<(string Group, string Prefix, MethodInfo Method, string Name, string Description, string Usage)> commands) {
+    // Convert old format to new format with isAsync = false for backward compatibility
+    var newCommands = commands.Select(cmd => (cmd.Group, cmd.Prefix, cmd.Method, cmd.Name, cmd.Description, cmd.Usage, false));
+    RegisterExternalCommandsBatch(newCommands);
   }
 
   /// <summary>

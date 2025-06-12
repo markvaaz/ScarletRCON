@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 #nullable enable
 
@@ -14,11 +15,12 @@ public class RconCommandCategoryAttribute(string categoryName) : Attribute
 }
 
 [AttributeUsage(AttributeTargets.Method)]
-public class RconCommandAttribute(string name, string? description = null, string? usage = null) : Attribute
+public class RconCommandAttribute(string name, string? description = null, string? usage = null, bool isAsync = false) : Attribute
 {
   public string Name { get; set; } = name;
   public string? Description { get; set; } = description;
   public string? Usage { get; set; } = usage;
+  public bool IsAsync { get; set; } = isAsync;
 }
 
 public static class RconCommandRegistrar
@@ -31,13 +33,20 @@ public static class RconCommandRegistrar
     return _isScarletRconAvailable.Value;
   }
 
+  private static bool IsAsyncMethod(MethodInfo method)
+  {
+    var returnType = method.ReturnType;
+    return returnType == typeof(Task) ||
+           (returnType.IsGenericType && returnType.GetGenericTypeDefinition() == typeof(Task<>));
+  }
+
   public static void RegisterAll()
   {
     if (!IsScarletRconAvailable())
       return; Assembly assembly = Assembly.GetCallingAssembly();
     var prefix = $"{assembly.GetName().Name?.ToLowerInvariant()}.";
 
-    var commandsToRegister = new List<(string, string, MethodInfo, string, string?, string)>();
+    var commandsToRegister = new List<(string, string, MethodInfo, string, string?, string, bool)>();
 
     foreach (var type in assembly.GetTypes())
     {
@@ -59,7 +68,9 @@ public static class RconCommandRegistrar
                   p.ParameterType == typeof(List<string>) ? "<...text>" : $"<{p.Name}>"));
         }
 
-        commandsToRegister.Add((group, prefix, method, attr.Name, attr.Description, usage ?? ""));
+        bool isAsync = attr.IsAsync || IsAsyncMethod(method);
+
+        commandsToRegister.Add((group, prefix, method, attr.Name, attr.Description, usage ?? "", isAsync));
       }
     }
     var commandHandlerType = Type.GetType("ScarletRCON.CommandSystem.CommandHandler, ScarletRCON");
