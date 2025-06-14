@@ -70,9 +70,7 @@ public static class CommandHandler {
         if (attr == null) continue;
 
         string baseName = attr.Name.ToLowerInvariant();
-        string fullCommandName = string.Join(".", $"{prefix}{baseName}".Split(" "));
-
-        string usage = attr.Usage;
+        string fullCommandName = string.Join(".", $"{prefix}{baseName}".Split(" ")); string usage = attr.Usage;
         if (string.IsNullOrWhiteSpace(usage)) {
           var parameters = method.GetParameters();
           usage = parameters.Length == 0
@@ -81,7 +79,10 @@ public static class CommandHandler {
                   p.ParameterType == typeof(List<string>) ? "<...text>" : $"<{p.Name}>"));
         }
 
-        var def = new RconCommandDefinition(fullCommandName, attr.Description, usage, method, null, attr.IsAsync);
+        // Automatically detect if the method is async based on return type
+        bool isAsync = IsAsyncMethod(method);
+
+        var def = new RconCommandDefinition(fullCommandName, attr.Description, usage, method, null, isAsync);
 
         if (!Commands.ContainsKey(fullCommandName))
           Commands[fullCommandName] = [];
@@ -96,13 +97,14 @@ public static class CommandHandler {
         CommandCategories[group] = [.. CommandCategories[group].OrderBy(c => c.Name)];
       }
     }
-
     SortCommands();
-  }  /// <summary>
-     /// Determines if a method is async by checking its return type.
-     /// </summary>
-     /// <param name="method">The method to check</param>
-     /// <returns>True if the method is async, false otherwise</returns>
+  }
+
+  /// <summary>
+  /// Determines if a method is async by checking its return type.
+  /// </summary>
+  /// <param name="method">The method to check</param>
+  /// <returns>True if the method is async, false otherwise</returns>
   private static bool IsAsyncMethod(MethodInfo method) {
     var returnType = method.ReturnType;
     return returnType == typeof(Task) ||

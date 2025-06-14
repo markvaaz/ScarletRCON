@@ -1,3 +1,7 @@
+## Update 1.2.2
+
+- Remove manual `isAsync` parameter from `RconCommandAttribute` 
+
 ## Update 1.2.1
 
 - Fix RegisterExternalCommandsBatch ambiguity with automatic async detection
