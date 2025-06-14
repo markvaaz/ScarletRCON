@@ -121,7 +121,6 @@ public static class CommandHandler {
     foreach (var (group, prefix, method, name, description, usage) in commands) {
       string fullCommandName = string.Join(".", $"{prefix}{name.ToLowerInvariant()}".Split(" "));
 
-      // Automatically detect if the method is async
       bool isAsync = IsAsyncMethod(method);
 
       var def = new RconCommandDefinition(fullCommandName, description, usage, method, null, isAsync);
