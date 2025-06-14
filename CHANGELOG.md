@@ -1,3 +1,7 @@
+## Update 1.2.4
+
+- Fixed async command detection.
+
 ## Update 1.2.2
 
 - Remove manual `isAsync` parameter from `RconCommandAttribute` 
@@ -21,4 +25,4 @@
 
 ## Update 1.1.6
 
-- Removed `Destroy_TravelBuffSystem.OnUpdate` patch, as it was causing lag. 
+- Removed `Destroy_TravelBuffSystem.OnUpdate` patch, as it was causing lag. 4
