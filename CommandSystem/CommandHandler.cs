@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 
 namespace ScarletRCON.CommandSystem;
 
@@ -101,14 +102,12 @@ public static class CommandHandler {
   }
 
   /// <summary>
-  /// Determines if a method is async by checking its return type.
+  /// Determines if a method is async by checking for existence of an AsyncStateMachineAttribute.
   /// </summary>
   /// <param name="method">The method to check</param>
   /// <returns>True if the method is async, false otherwise</returns>
   private static bool IsAsyncMethod(MethodInfo method) {
-    var returnType = method.ReturnType;
-    return returnType == typeof(Task) ||
-           (returnType.IsGenericType && returnType.GetGenericTypeDefinition() == typeof(Task<string>));
+    return null != method.GetCustomAttribute(typeof(AsyncStateMachineAttribute));
   }
 
   /// <summary>
