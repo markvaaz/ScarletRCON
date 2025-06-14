@@ -92,7 +92,7 @@ public static class RconCommandRegistrar
       throw new InvalidOperationException("ScarletRCON.CommandSystem.CommandHandler not found.");
 
     if (unregisterMethod == null)
-      throw new InvalidOperationException("ScarletRCON.CommandSystem.CommandHandler.UnregisterAssembly not found.");
+      throw new InvalidOperationException("ScarletRCON.CommandSystem.CommandHandler.UnregisterExternalAssembly not found.");
 
     unregisterMethod.Invoke(null, [assembly]);
   }

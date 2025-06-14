@@ -172,6 +172,10 @@ public static class CommandHandler {
     UnregisterAssembly(Assembly.GetCallingAssembly());
   }
 
+  public static void UnregisterExternalAssembly(Assembly asm) {
+    UnregisterAssembly(asm);
+  }
+
   /// <summary>
   /// Unregisters all commands from the specified assembly.
   /// </summary>
