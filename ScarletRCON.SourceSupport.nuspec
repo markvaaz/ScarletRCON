@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>ScarletRCON.SourceSupport</id>
-    <version>1.2.0</version>
+    <version>1.2.1</version>
     <authors>markvaaz</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Source-only RCON support for ScarletRCON-compatible mods</description>
