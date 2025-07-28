@@ -1,4 +1,4 @@
-## Update 1.2.4
+## Update 1.2.5
 
 - Fixed InventoryService reference to use the new ScarletCore version.
 
