@@ -1,5 +1,9 @@
 ## Update 1.2.4
 
+- Fixed InventoryService reference to use the new ScarletCore version.
+
+## Update 1.2.4
+
 - Fixed async command detection.
 
 ## Update 1.2.2
