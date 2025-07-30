@@ -9,6 +9,7 @@ using Unity.Collections;
 using ScarletCore.Systems;
 using System.Threading.Tasks;
 using UnityEngine;
+using System.Linq;
 
 namespace ScarletRCON.Commands;
 
@@ -184,20 +185,43 @@ public static class ServerCommands {
     return result;
   }
 
-  [RconCommand("listallplayers", "List all players.")]
-  public static string ListAllPlayers() {
-    string result = "";
-    int count = 0;
+  [RconCommand("listallplayers", "List online players.")]
+  public static string ListAllPlayers(int page) {
+    const int maxPageSize = 20;
+    var players = PlayerService.AllPlayers ?? [];
 
-    foreach (var player in PlayerService.AllPlayers) {
-      count++;
-      string status = player.IsOnline ? "\u001b[32m●\u001b[0m" : "\u001b[31m●\u001b[0m";
-      result += $"- \x1b[97m{player.Name}\u001b[0m \u001b[90m({player.PlatformId})\u001b[0m {status}\n";
+    if (!players.Any()) {
+      return "No players found.";
     }
 
-    result += $"Total players: {count}";
+    var totalPages = (int)Math.Ceiling((double)players.Count / maxPageSize);
+    page = Math.Max(1, Math.Min(page, totalPages)); // Garantir que a página está no range válido
+
+    var startIndex = (page - 1) * maxPageSize;
+    var playersOnPage = players.Skip(startIndex).Take(maxPageSize);
+
+    string result = "";
+    int onlineCount = 0;
+
+    foreach (var player in playersOnPage) {
+      string status = player.IsOnline ? "\u001b[32m●\u001b[0m" : "\u001b[31m●\u001b[0m"; // Verde para online, vermelho para offline
+      if (player.IsOnline) onlineCount++;
+      result += $"- \u001b[97m{player.Name}\u001b[0m \u001b[90m({player.PlatformId})\u001b[0m {status}\n";
+    }
+
+    int offlineCount = players.Count - onlineCount;
+    result += $"Total players: {players.Count} ({onlineCount} online, {offlineCount} offline)";
+
+    if (totalPages > 1) {
+      result += $"\nPage {page} of {totalPages}";
+    }
 
     return result;
+  }
+
+  [RconCommand("listallplayers", "List online players.")]
+  public static string ListAllPlayers() {
+    return ListAllPlayers(1);
   }
 
   [RconCommand("listclans", "List all clans.")]
