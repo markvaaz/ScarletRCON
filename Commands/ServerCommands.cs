@@ -8,22 +8,55 @@ using Unity.Entities;
 using Unity.Collections;
 using ScarletCore.Systems;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace ScarletRCON.Commands;
 
 [RconCommandCategory("Server Administration")]
 public static class ServerCommands {
+  [RconCommand("shutdown", "Shuts down the server gracefully.")]
+  public static string Shutdown() {
+    if (!GameSystems.Initialized) {
+      return "Game systems not initialized. Cannot shutdown.";
+    }
+
+    GameSystems.TriggerPersistenceSaveSystem.TriggerAutoSave(GetServerRuntimeSettings());
+    ShutdownAsync();
+
+    string white = "\x1b[97m";
+    string gray = "\u001b[90m";
+    string reset = "\x1b[0m";
+
+    return $"{white}Game saved successfully!{reset}\n" +
+           $"{gray}Server will shut down in 3 seconds...{reset}\n" +
+           $"{gray}Server context window will close in 10 seconds.{reset}";
+  }
+
+
+  private static async void ShutdownAsync() {
+    await Task.Delay(TimeSpan.FromSeconds(3));
+    Application.Quit();
+    await Task.Delay(TimeSpan.FromSeconds(7));
+    try {
+      Process.GetCurrentProcess().Kill();
+    } catch { }
+  }
 
   [RconCommand("save", "Save the game")]
   public static string Save() {
-    var saveName = "Save_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".save";
-    GameSystems.TriggerPersistenceSaveSystem.TriggerSave(SaveReason.ManualSave, saveName, GetServerRuntimeSettings());
-    return $"Game saved as '{saveName}'.";
+    GameSystems.TriggerPersistenceSaveSystem.TriggerAutoSave(GetServerRuntimeSettings());
+    return $"Game saved'.";
   }
 
   [RconCommand("serverstats", "Show server statistics.")]
   public static string ServerStats() {
-    var players = PlayerService.GetAllConnected();
+    var players = PlayerService.AllPlayers;
+    var count = 0;
+
+    foreach (var player in players) {
+      if (player.IsOnline) count++;
+    }
+
     var uptime = DateTime.Now - Process.GetCurrentProcess().StartTime;
 
     string result = $"Server Stats\n";
