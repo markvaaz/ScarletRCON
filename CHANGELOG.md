@@ -1,3 +1,9 @@
+
+## Update 1.2.6
+
+- Added `shutdown` command to safely shut down the server via RCON.
+- Fixed the `serverstats` command to correctly display the count of online players.
+
 ## Update 1.2.5
 
 - Fixed InventoryService reference to use the new ScarletCore version.
