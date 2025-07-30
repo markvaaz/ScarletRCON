@@ -1,5 +1,5 @@
 
-## Update 1.2.6
+## Update 1.2.6 & 1.2.7
 
 - Added `shutdown` command to safely shut down the server via RCON.
 - Fixed the `serverstats` command to correctly display the count of online players.
