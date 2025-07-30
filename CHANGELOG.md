@@ -1,7 +1,6 @@
 ## Update 1.2.8
 
 - Changed the `listplayers` command to include only online players in the output.
-- Changed the `help` to support paging and display all commands.
 - Added `listallplayers` command to list all players with their online status.
 
 ## Update 1.2.6 & 1.2.7
