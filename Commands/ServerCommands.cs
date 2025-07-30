@@ -163,7 +163,28 @@ public static class ServerCommands {
     return result;
   }
 
-  [RconCommand("listplayers", "List all players.")]
+  [RconCommand("listplayers", "List online players.")]
+  public static string ListOnlinePlayers() {
+    string result = "";
+    int count = 0;
+
+    foreach (var player in PlayerService.AllPlayers) {
+      if (!player.IsOnline) continue;
+      count++;
+      string status = player.IsOnline ? "\u001b[32m●\u001b[0m" : "\u001b[31m●\u001b[0m";
+      result += $"- \x1b[97m{player.Name}\u001b[0m \u001b[90m({player.PlatformId})\u001b[0m {status}\n";
+    }
+
+    if (count == 0) {
+      return "No players online.";
+    } else {
+      result += $"Total online players: {count}";
+    }
+
+    return result;
+  }
+
+  [RconCommand("listallplayers", "List all players.")]
   public static string ListAllPlayers() {
     string result = "";
     int count = 0;
