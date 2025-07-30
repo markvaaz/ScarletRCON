@@ -7,39 +7,6 @@ namespace ScarletRCON.Commands;
 
 [RconCommandCategory("Help")]
 public static class HelpCommand {
-  [RconCommand("help", "List all commands.")]
-  public static string ListAll(int page) {
-    const int maxPageSize = 20;
-    string result = "";
-    var orderedCategories = GetOrderedCategories().ToList();
-    var allCommands = new List<(string Category, RconCommandDefinition Command)>();
-    foreach (var category in orderedCategories) {
-      foreach (var command in category.Value.OrderBy(c => c.Name, StringComparer.OrdinalIgnoreCase)) {
-        allCommands.Add((category.Key, command));
-      }
-    }
-    if (!allCommands.Any()) {
-      return "No commands found.";
-    }
-    var totalPages = (int)Math.Ceiling((double)allCommands.Count / maxPageSize);
-    page = Math.Max(1, Math.Min(page, totalPages));
-    var startIndex = (page - 1) * maxPageSize;
-    var commandsOnPage = allCommands.Skip(startIndex).Take(maxPageSize);
-    string currentCategory = null;
-    foreach (var (category, command) in commandsOnPage) {
-      if (currentCategory != category) {
-        result += $"\n\x1b[97m{category}\u001b[0m:\n";
-        currentCategory = category;
-      }
-      result += $"\u001b[37m- {command.Name}\u001b[0m:\u001b[90m{(string.IsNullOrEmpty(command.Usage) ? "" : " " + command.Usage)} - {command.Description}\u001b[0m\n";
-    }
-    result += $"\nTotal commands: {allCommands.Count}";
-    if (totalPages > 1) {
-      result += $"\nPage {page} of {totalPages}";
-    }
-    return result;
-  }
-
   [RconCommand("help", "Show info about a specific command.")]
   public static string Help(string commandName) {
     if (CommandHandler.TryGetCommands(commandName, out var commands)) {
@@ -65,7 +32,20 @@ public static class HelpCommand {
 
   [RconCommand("help", "List all commands.")]
   public static string ListAll() {
-    return ListAll(1);
+    string result = "";
+
+    var orderedCategories = GetOrderedCategories();
+
+    foreach (var category in orderedCategories) {
+      result += $"\n\x1b[97m{category.Key}\u001b[0m:\n";
+      foreach (var command in category.Value.OrderBy(c => c.Name, StringComparer.OrdinalIgnoreCase)) {
+        result += $"\u001b[37m- {command.Name}\u001b[0m:\u001b[90m{(string.IsNullOrEmpty(command.Usage) ? "" : " " + command.Usage)} - {command.Description}\u001b[0m\n";
+      }
+    }
+
+    result += "\nTotal commands: " + CommandHandler.Commands.Count;
+
+    return result;
   }
 
   public static IEnumerable<KeyValuePair<string, List<RconCommandDefinition>>> GetOrderedCategories() {
