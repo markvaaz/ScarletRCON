@@ -61,7 +61,7 @@ public static class ServerCommands {
 
     string result = $"Server Stats\n";
     var process = Process.GetCurrentProcess();
-    result += $"- Players Online: {players.Count}\n";
+    result += $"- Players Online: {count}\n";
     result += $"- Uptime: {uptime:hh\\:mm\\:ss}\n";
     result += $"- Memory Usage: {process.WorkingSet64 / (1024 * 1024)} MB\n";
 
