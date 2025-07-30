@@ -8,6 +8,7 @@ using ScarletRCON.CommandSystem;
 using Il2CppSystem.Net.Sockets;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using ScarletCore.Utils;
+using System.Text;
 
 namespace ScarletRCON.Patches;
 
@@ -50,7 +51,8 @@ class RconInitializePatch {
         try {
           var item = args[i];
           if (item == null) break;
-          argsResult.Add(item);
+          var fixedItem = Encoding.UTF8.GetString(Encoding.Latin1.GetBytes(item));
+          argsResult.Add(fixedItem);
           i++;
         } catch {
           break;
