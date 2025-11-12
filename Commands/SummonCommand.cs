@@ -1,7 +1,6 @@
 using ScarletRCON.CommandSystem;
 using ScarletCore.Services;
 using Stunlock.Core;
-using Unity.Mathematics;
 using ProjectM;
 
 namespace ScarletRCON.Commands;
@@ -14,7 +13,7 @@ public static class SummonCommand {
       return "Invalid Prefab GUID.";
     }
 
-    var entities = UnitSpawnerService.ImmediateSpawn(guid, new(x, y, z), count: quantity, lifeTime: lifeTime);
+    var entities = SpawnerService.ImmediateSpawn(guid, new(x, y, z), minRange: 2f, maxRange: 2f, count: quantity, lifeTime: lifeTime);
 
     if (disableWhenNoPlayersInRange) {
       foreach (var entity in entities) {
@@ -44,7 +43,7 @@ public static class SummonCommand {
       return $"Player '{playerName}' is not currently online.";
     }
 
-    var entities = UnitSpawnerService.ImmediateSpawn(guid, player.CharacterEntity.Position(), count: quantity, lifeTime: lifeTime);
+    var entities = SpawnerService.ImmediateSpawn(guid, player.CharacterEntity.Position(), minRange: 2f, maxRange: 2f, count: quantity, lifeTime: lifeTime);
 
     if (disableWhenNoPlayersInRange) {
       foreach (var entity in entities) {
